@@ -84,4 +84,16 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:onClick="actionCalc" />
+
+
+    <TextView
+        android:text=""
+        android:textSize="18sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textResult"
+        android:layout_below="@+id/button"
+        android:layout_alignParentStart="true"
+        android:layout_gravity="center"
+        android:layout_marginTop="30dp" />
 </RelativeLayout>

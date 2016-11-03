@@ -8,6 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class CalcActivity extends AppCompatActivity {
@@ -44,7 +45,6 @@ public class CalcActivity extends AppCompatActivity {
         if (height.isEmpty()){
             return;
         }
-
         Toast toast = Toast.makeText(getApplicationContext(),"Ваша БЖУ = ",Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.CENTER, 0, 0);
         toast.show();

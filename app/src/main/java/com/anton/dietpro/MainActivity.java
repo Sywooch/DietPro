@@ -14,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
@@ -130,7 +131,9 @@ public class MainActivity extends AppCompatActivity
         calc.setAge(x);
         calc.setWeight(y);
         calc.setHeight(z);
-        double cal = calc.calc();
+        double cal = calc.calcMifflin();
+        TextView textResult = ((TextView)findViewById(R.id.textResult));
+        textResult.setText(String.valueOf(cal));
         Toast toast = Toast.makeText(getApplicationContext(),"Ваша БЖУ = "+String.valueOf(cal),Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.CENTER, 0, 0);
         toast.show();

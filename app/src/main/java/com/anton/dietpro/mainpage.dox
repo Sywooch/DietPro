@@ -1,0 +1,27 @@
+/**
+*\mainpage Главная страница проекта
+*
+*\li \ref first_sec
+*\li \ref sub_first_sec
+*\li \ref second_sec
+*\li \ref third_sec
+*
+ * \section first_sec О программе
+ *
+ * Первый раздел.
+ * Описывает программа в общих чертах.
+ *
+ *\subsection sub_first_sec Подсекция
+ *
+ *Подраздел описания программы
+ *
+ * \section second_sec Api
+ *
+ * Второй раздел.
+ *Описание API
+ * \section third_sec Об авторе
+ *
+ * Программа написана студентом МТУ, Васильевым А.В.
+ *
+ *
+**/
