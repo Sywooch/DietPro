@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">DietPro</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Настройки</string>
+    <string name="activity2">Activity 2</string>
+    <string name="title_activity_calc">CalcActivity</string>
+    <string name="label_age" >Ваш возраст</string>
+    <string name="label_weight" >Ваш вес</string>
+    <string name="label_height" >Ваш рост в см</string>
+    <string name="btnCalc" >Рассчитать</string>
+</resources>
