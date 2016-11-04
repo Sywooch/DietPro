@@ -21,6 +21,14 @@
         <activity
             android:name=".CalcActivity"
             android:label="@string/title_activity_calc"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ProductActivity"
+            android:label="@string/title_activity_product"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".DietActivity"
+            android:label="@string/title_activity_diet"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

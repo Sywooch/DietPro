@@ -1,5 +1,6 @@
 package com.anton.dietpro;
 
+import android.content.Intent;
 import android.os.Bundle;
 //import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -11,6 +12,9 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -20,23 +24,15 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    DietDB db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-/*
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-        */
-
+        db = new DietDB(this);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -103,42 +99,22 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-    public void showDiets(View view)
+    public void showCalc(View view)
     {
-        setContentView(R.layout.activity_calc);
-
+        Intent intent = new Intent(this,CalcActivity.class);
+        startActivity(intent);
+        //setContentView(R.layout.activity_calc);
+    }
+    public void showCalc(MenuItem item){
+        Intent intent = new Intent(this,CalcActivity.class);
+        startActivity(intent);
     }
 
-    public void actionCalc(View v)
-    {
-
-        String age = ((EditText)findViewById(R.id.editText6)).getText().toString();
-        String weight = ((EditText)findViewById(R.id.editText5)).getText().toString();
-        String height = ((EditText)findViewById(R.id.editText11)).getText().toString();
-        if (age.isEmpty()){
-            return;
-        }
-        if (weight.isEmpty()){
-            return;
-        }
-        if (height.isEmpty()){
-            return;
-        }
-        int x = Integer.parseInt(age);
-        int y = Integer.parseInt(weight);
-        int z = Integer.parseInt(height);
-        CalcCalories calc = new CalcCalories();
-        calc.setAge(x);
-        calc.setWeight(y);
-        calc.setHeight(z);
-        double cal = calc.calcMifflin();
-        TextView textResult = ((TextView)findViewById(R.id.textResult));
-        textResult.setText(String.valueOf(cal));
-        Toast toast = Toast.makeText(getApplicationContext(),"Ваша БЖУ = "+String.valueOf(cal),Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.CENTER, 0, 0);
-        toast.show();
-
+    public void showDiet(MenuItem item){
+        Intent intent = new Intent(this,DietActivity.class);
+        startActivity(intent);
     }
+
 
 
 }

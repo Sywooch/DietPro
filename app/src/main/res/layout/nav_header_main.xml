@@ -32,12 +32,5 @@
         android:layout_height="wrap_content"
         android:text="develop of Vasilev A." />
 
-    <Button
-        android:id="@+id/buttonDiets"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/activity2"
-        android:layout_weight="0.14"
-        android:onClick="showDiets"/>
 
 </LinearLayout>
