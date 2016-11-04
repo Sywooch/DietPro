@@ -1,5 +1,6 @@
 package com.anton.dietpro;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -30,23 +31,10 @@ public class DietActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         List<String> catNames = new ArrayList<String>();
-
-        catNames.add("Рыжик");
-        catNames.add("Барсик");
-        catNames.add("Мурзик");
-        catNames.add("Мурка");
-        catNames.add("Васька");
-        catNames.add("Томасина");
-        catNames.add("Кристина");
-        catNames.add("Пушок");
-        catNames.add("Дымка");
-        catNames.add("Кузя");
-        catNames.add("Китти");
-        catNames.add("Масяня");
-        catNames.add("Симба");
-
         DietDB dbHelper = new DietDB(this);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+
         // делаем запрос всех данных из таблицы mytable, получаем Cursor
         Cursor c = db.query("diet", null, null, null, null, null, null);
 
@@ -57,13 +45,14 @@ public class DietActivity extends AppCompatActivity {
             // определяем номера столбцов по имени в выборке
             int idColIndex = c.getColumnIndex("id");
             int nameColIndex = c.getColumnIndex("name");
-            int emailColIndex = c.getColumnIndex("email");
+            int descriptionColIndex = c.getColumnIndex("description");
+            int lengthColIndex = c.getColumnIndex("length");
 
             do {
                 // получаем значения по номерам столбцов и пишем все в лог
-                String row = "ID = " + c.getInt(idColIndex) +
-                        ", name = " + c.getString(nameColIndex) +
-                        ", email = " + c.getString(emailColIndex);
+                String row = c.getString(nameColIndex);/* +
+                        "Продолжительность " + c.getString(lengthColIndex) + " дней" +
+                        "Описание\n = " + c.getString(descriptionColIndex) */;
                 catNames.add(row);
                 // переход на следующую строку
                 // а если следующей нет (текущая - последняя), то false - выходим из цикла
@@ -75,6 +64,7 @@ public class DietActivity extends AppCompatActivity {
         c.close();
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,catNames);
         listView.setAdapter(adapter);
+        dbHelper.close();
 
     }
 
