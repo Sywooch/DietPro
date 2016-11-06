@@ -4,10 +4,16 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseErrorHandler;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,15 +23,26 @@ import java.util.List;
 
 public class DietDB extends SQLiteOpenHelper {
 
-    final String LOG_TAG = "myLog";
+    private static String DB_PATH = "/data/data/com.anton.dietpro/databases/";
+    private static String DB_NAME = "dietpro";
+    private static final int SCHEMA = 1; // версия базы данных
+    static final String TABLE = "diet";
+
+    public static final String COLUMN_ID = "id";
+    public static final String COLUMN_NAME = "name";
+    public static final String COLUMN_DESCRIPTION = "description";
+    public static final String COLUMN_LENGTH = "length";
+    public SQLiteDatabase database;
+    private Context myContext;
 
     public DietDB(Context context)
     {
-        super(context, "DietDB", null, 1);
+        super(context, DB_NAME, null, 1);
+        this.myContext = context;
     }
     @Override
     public void onCreate(SQLiteDatabase db) {
-        Log.d(LOG_TAG, "--- onCreate database ---");
+        /*
         // создаем таблицу с полями
         db.execSQL("create table diet ("
                 + "id integer primary key autoincrement,"
@@ -34,68 +51,66 @@ public class DietDB extends SQLiteOpenHelper {
                 + "discription text"
                 + ");");
         initDB(db);
+        */
     }
+
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS diet");
-        onCreate(db);
+       // db.execSQL("DROP TABLE IF EXISTS diet");
+        //onCreate(db);
     }
 
 
     public void initDB(SQLiteDatabase db)
     {
+        //инициализация БД
+    }
 
-        List<Diet> diets = new ArrayList<Diet>();
-        Diet diet = new Diet("Белковая диета",14,"Похудение до 10 кг за 14 дней.\n" +
-                "Среднесуточная калорийность 700 Ккал.\n" +
-                "Белковая диета по праву является и считается одной из самых эффективных и результативных систем питания - диет для снижения веса. Эта популярная диета рассчитана на активный образ жизни. Свою результативность белковая диета лучше всего показывает при дополнительных тренировках в тренажерном зале фитнесом, аэробикой, шейпингом и т.п. как минимум 3 раза в неделю. Кроме того белковая диета на 14 дней предполагает не менее 6 приемов пищи в день.\n" +
-                "Меню белковой диеты полностью исключает все продукты с высоким содержанием углеводов и жестко ограничивает количество жиров. Эти продукты с высоким содержанием белка в меню преобладают, наряду с овощами и фруктами, являющимися источниками клетчатки, минеральных комплексов и основных витаминов.\n" +
-                "Белковая диета представлена на vse-diety.com двумя вариантами меню: на 7 дней и на 14 дней. Эффективность и средняя калорийность этих меню полностью идентична, разница лишь в продолжительности диеты.");
-        diets.add(diet);
+    public void create_db(){
+        InputStream myInput = null;
+        OutputStream myOutput = null;
+        try {
+            File file = new File(DB_PATH + DB_NAME);
+            if (!file.exists()) {
+                this.getReadableDatabase();
+                //получаем локальную бд как поток
+                myInput = myContext.getAssets().open(DB_NAME);
+                // Путь к новой бд
+                String outFileName = DB_PATH + DB_NAME;
 
-        diet = new Diet("Кето диета",14,"Кетоновая диета была изобретена для снижения массы тела. Можно сказать, что похудение является побочным эффектом ее применения. Ее целью является вызывание кетоза в организме. Это важно для детей и молодежи с эпилепсией и редкими заболеваниями, с метаболическими и генетическими факторами в ситуации, когда медикаментозное лечение не приносит эффекта. Однако такой тип питания стал модным для похудения у мужчин и женщин.\n" +
-                "Подобная диета - это потребление жирной пищи с низким содержанием углеводов. В ежедневном рационе потребляется около 35% жиров, 50 % углеводов и 15 % белков. В рационе кетоновой диете жир может составлять 80-90% от потребляемой энергии, а белки углеводы - 10-20 %.\n" +
-                "Основным источником энергии в организме являются углеводы. Когда их не хватает, организм начинает искать другое \"топливо\". Ими являются жиры, и, в частности, возникающие в процессе распада жиров кетоновые тела (так называемый кетоз). Однако они обеспечивают организму только 70 % необходимой энергии. После нескольких дней применения кето диеты человек входит в состояние эйфории (так определяют воздействие кетонов врачи) - у него отличное настроение, он веселый, испытывает чувство легкости. Через месяц другой все проходит. Появляются потеря аппетита, сонливость и запоры, запах пота и мочи, меняется дыхание, нарастает жажда.");
-        diets.add(diet);
+                // Открываем пустую бд
+                myOutput = new FileOutputStream(outFileName);
 
-        diet = new Diet("БУЧ диета",14,"Основы БУЧ (белково-углеводное чередование) диеты\n" +
-                "\n" +
-                "Как видно из расшифровки названия, в данной диете основным принципом является чередование в рационе питания дней с преобладанием белковой или углеводистой пищи. Для чего это нужно?\n" +
-                "\n" +
-                "Чтобы заставить организм расставаться со своим неприкосновенным жировым запасом, необходимо в первую очередь расходовать весь гликоген (углеводы), содержащийся в мышцах и печени. Этого можно достичь путем снижения поступления углеводов с пищей. Но не все так просто. Ведь после того, как человек чувствует критический уровень их недостатка, организм начинает испытывать стресс и брать энергию, разрушая мышцы, дабы быстро получить энергию. И только после этого переходит к разрушению жировой ткани. Во избегание таких явлений нужно найти правильный баланс между окончанием углеводных запасов и их пополнением. Только в этом случае начинает использоваться энергия от распада жира.");
-        diets.add(diet);
+                // побайтово копируем данные
+                byte[] buffer = new byte[1024];
+                int length;
+                while ((length = myInput.read(buffer)) > 0) {
+                    myOutput.write(buffer, 0, length);
+                }
 
-        diet = new Diet("Диета 10х10",14,"В последнее время у любительниц экстренного похудения пользуется популярностью диета под названием «10х10». За десять дней, если постараться, можно сбросить до десяти килограммов. Диета очень строгая, с полным исключением углеводов из рациона.");
-        diets.add(diet);
-
-
-/*
-
-        catNames.add("Рыжик");
-        catNames.add("Барсик");
-        catNames.add("Мурзик");
-        catNames.add("Мурка");
-        catNames.add("Васька");
-        catNames.add("Томасина");
-        catNames.add("Кристина");
-        catNames.add("Пушок");
-        catNames.add("Дымка");
-        catNames.add("Кузя");
-        catNames.add("Китти");
-        catNames.add("Масяня");
-        catNames.add("Симба");
-*/
-
-        ContentValues cv = new ContentValues();
-        for(int i = 0;i<(diets.size());i++){
-            cv.put("name", diets.get(i).getName());
-            cv.put("length", diets.get(i).getLength());
-            cv.put("description", diets.get(i).getDescription());
-            Log.d("myLog","вставили диету");
-            // вставляем запись и получаем ее ID
-            long rowID = db.insert("diet", null, cv);
+                myOutput.flush();
+                myOutput.close();
+                myInput.close();
+            }
         }
+        catch(IOException ex){
+
+        }
+    }
+    public void open() throws SQLException {
+        String path = DB_PATH + DB_NAME;
+        database = SQLiteDatabase.openDatabase(path, null,
+                SQLiteDatabase.OPEN_READWRITE);
 
     }
+
+    @Override
+    public synchronized void close() {
+        if (database != null) {
+            database.close();
+        }
+        super.close();
+    }
+
 }

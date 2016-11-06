@@ -32,11 +32,13 @@ public class DietActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         List<String> catNames = new ArrayList<String>();
         DietDB dbHelper = new DietDB(this);
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        dbHelper.create_db();
+        dbHelper.open();
+        SQLiteDatabase db = dbHelper.database;
 
 
         // делаем запрос всех данных из таблицы mytable, получаем Cursor
-        Cursor c = db.query("diet", null, null, null, null, null, null);
+        Cursor c = dbHelper.database.rawQuery("select * from " + dbHelper.TABLE,null); //query("diet", null, null, null, null, null, null);
 
         // ставим позицию курсора на первую строку выборки
         // если в выборке нет строк, вернется false
