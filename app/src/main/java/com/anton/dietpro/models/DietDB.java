@@ -1,4 +1,4 @@
-package com.anton.dietpro;
+package com.anton.dietpro.models;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -26,7 +26,8 @@ public class DietDB extends SQLiteOpenHelper {
     private static String DB_PATH = "/data/data/com.anton.dietpro/databases/";
     private static String DB_NAME = "dietpro";
     private static final int SCHEMA = 1; // версия базы данных
-    static final String TABLE = "diet";
+    public static final String TABLE_DIET = "diet";
+    public static final String TABLE_PRODUCT = "product";
 
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_NAME = "name";
@@ -42,29 +43,11 @@ public class DietDB extends SQLiteOpenHelper {
     }
     @Override
     public void onCreate(SQLiteDatabase db) {
-        /*
-        // создаем таблицу с полями
-        db.execSQL("create table diet ("
-                + "id integer primary key autoincrement,"
-                + "name text,"
-                + "length integer unsigned,"
-                + "discription text"
-                + ");");
-        initDB(db);
-        */
     }
 
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-       // db.execSQL("DROP TABLE IF EXISTS diet");
-        //onCreate(db);
-    }
-
-
-    public void initDB(SQLiteDatabase db)
-    {
-        //инициализация БД
     }
 
     public void create_db(){

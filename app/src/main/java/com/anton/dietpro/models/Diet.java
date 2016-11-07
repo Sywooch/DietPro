@@ -1,4 +1,4 @@
-package com.anton.dietpro;
+package com.anton.dietpro.models;
 
 import org.w3c.dom.Text;
 
@@ -7,6 +7,22 @@ import org.w3c.dom.Text;
  */
 
 public class Diet {
+    public Diet(int id, String name, int length, String description) {
+        this.id = id;
+        this.name = name;
+        this.length = length;
+        this.description = description;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    private int id;
     public String getName() {
         return name;
     }

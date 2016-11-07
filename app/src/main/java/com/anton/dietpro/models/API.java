@@ -1,4 +1,4 @@
-package com.anton.dietpro;
+package com.anton.dietpro.models;
 
 /**
  * Created by admin on 04.11.16.

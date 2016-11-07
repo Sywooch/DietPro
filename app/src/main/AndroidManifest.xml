@@ -29,6 +29,10 @@
         <activity
             android:name=".DietActivity"
             android:label="@string/title_activity_diet"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".DietDetailsActivity"
+            android:label="@string/title_activity_calc_details"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

@@ -1,23 +1,23 @@
 package com.anton.dietpro;
 
-import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import com.anton.dietpro.adapter.DietAdapter;
+import com.anton.dietpro.models.Diet;
+import com.anton.dietpro.models.DietDB;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class DietActivity extends AppCompatActivity {
 
@@ -28,60 +28,74 @@ public class DietActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         ListView listView = (ListView) findViewById(R.id.listView);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        List<String> catNames = new ArrayList<String>();
+        if (getSupportActionBar() != null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+        ArrayList<Diet> diets = new ArrayList<>();
         DietDB dbHelper = new DietDB(this);
         dbHelper.create_db();
         dbHelper.open();
-        SQLiteDatabase db = dbHelper.database;
-
-
-        // делаем запрос всех данных из таблицы mytable, получаем Cursor
-        Cursor c = dbHelper.database.rawQuery("select * from " + dbHelper.TABLE,null); //query("diet", null, null, null, null, null, null);
-
-        // ставим позицию курсора на первую строку выборки
-        // если в выборке нет строк, вернется false
+        if (dbHelper.database == null){
+            Toast.makeText(this,"Нет подключения к БД",Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Cursor c = dbHelper.database.rawQuery("select * from " + DietDB.TABLE_DIET,null);
         if (c.moveToFirst()) {
-
-            // определяем номера столбцов по имени в выборке
             int idColIndex = c.getColumnIndex("id");
             int nameColIndex = c.getColumnIndex("name");
             int descriptionColIndex = c.getColumnIndex("description");
             int lengthColIndex = c.getColumnIndex("length");
 
             do {
-                // получаем значения по номерам столбцов и пишем все в лог
-                String row = c.getString(nameColIndex);/* +
-                        "Продолжительность " + c.getString(lengthColIndex) + " дней" +
-                        "Описание\n = " + c.getString(descriptionColIndex) */;
-                catNames.add(row);
-                // переход на следующую строку
-                // а если следующей нет (текущая - последняя), то false - выходим из цикла
+                Diet diet = new Diet(
+                                    Integer.valueOf(c.getString(idColIndex))
+                                    ,c.getString(nameColIndex)
+                                    ,Integer.valueOf(c.getString(lengthColIndex))
+                                    ,c.getString(descriptionColIndex)
+                                    );
+                diets.add(diet);
             } while (c.moveToNext());
         } else {
-            String row = "0 rows";
-            catNames.add(row);
+            Diet emptyDiet = new Diet("Диеты не найдены",0,null);
+            diets.add(emptyDiet);
         }
         c.close();
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,catNames);
-        listView.setAdapter(adapter);
+        DietAdapter adapterDiet = new DietAdapter(this,diets);
+        listView.setAdapter(adapterDiet);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(getApplicationContext(),DietDetailsActivity.class);
+                intent.putExtra("dietId",id + "");
+                startActivityForResult(intent,1);
+            }
+        });
         dbHelper.close();
 
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (data == null) {return;}
+        String dietId = data.getStringExtra("dietId");
+        //сохраняем ИД выбранной диеты в преференцес( но мб переделаем на БД )
+        SharedPreferences sPref = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor ed = sPref.edit();
+        ed.putString("acceptDietId",dietId);
+        ed.apply();
+        Toast.makeText(this, "Вы сели на диету " + dietId, Toast.LENGTH_SHORT).show();
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
         if (id == android.R.id.home) {
             Intent intent = new Intent(this,MainActivity.class);
             startActivity(intent);
@@ -89,4 +103,7 @@ public class DietActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+
+
 }

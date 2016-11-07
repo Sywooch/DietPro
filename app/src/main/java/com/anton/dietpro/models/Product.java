@@ -1,4 +1,6 @@
-package com.anton.dietpro;
+package com.anton.dietpro.models;
+
+import com.anton.dietpro.models.PFC;
 
 /**
  * Created by Anton Vasilev on 02.11.16.

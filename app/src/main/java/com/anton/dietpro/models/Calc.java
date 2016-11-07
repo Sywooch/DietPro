@@ -1,4 +1,4 @@
-package com.anton.dietpro;
+package com.anton.dietpro.models;
 
 /**
  * Created by Anton Vasilev on 02.11.16.

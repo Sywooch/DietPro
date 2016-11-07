@@ -1,4 +1,6 @@
-package com.anton.dietpro;
+package com.anton.dietpro.models;
+
+import com.anton.dietpro.models.Calc;
 
 /**
  * Created by Anton Vasilev on 03.11.16.
