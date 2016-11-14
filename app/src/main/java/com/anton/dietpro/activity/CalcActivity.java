@@ -1,4 +1,4 @@
-package com.anton.dietpro;
+package com.anton.dietpro.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.anton.dietpro.R;
 import com.anton.dietpro.models.CalcCalories;
 
 public class CalcActivity extends AppCompatActivity {
@@ -28,7 +29,6 @@ public class CalcActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
-
         return true;
     }
 

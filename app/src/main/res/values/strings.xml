@@ -19,4 +19,5 @@
     <string name="title_activity_product">Продукты</string>
     <string name="title_activity_calc_details">CalcDetailsActivity</string>
     <string name="acceptDiet">Сесть на диету</string>
+    <string name="title_activity_product_details">ProductDetailsActivity</string>
 </resources>

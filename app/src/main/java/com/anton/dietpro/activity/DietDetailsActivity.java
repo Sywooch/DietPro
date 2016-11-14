@@ -1,10 +1,8 @@
-package com.anton.dietpro;
+package com.anton.dietpro.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -14,6 +12,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.anton.dietpro.R;
+import com.anton.dietpro.activity.DietActivity;
 import com.anton.dietpro.models.DietDB;
 
 public class DietDetailsActivity extends AppCompatActivity {

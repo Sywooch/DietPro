@@ -36,6 +36,7 @@ public class DietDB extends SQLiteOpenHelper {
     public SQLiteDatabase database;
     private Context myContext;
 
+
     public DietDB(Context context)
     {
         super(context, DB_NAME, null, 1);

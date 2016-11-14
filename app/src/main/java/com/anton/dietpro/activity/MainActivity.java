@@ -1,4 +1,4 @@
-package com.anton.dietpro;
+package com.anton.dietpro.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,7 +12,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ProgressBar;
 
+import com.anton.dietpro.R;
+import com.anton.dietpro.activity.CalcActivity;
+import com.anton.dietpro.activity.DietActivity;
 import com.anton.dietpro.models.DietDB;
 
 public class MainActivity extends AppCompatActivity
@@ -112,6 +116,10 @@ public class MainActivity extends AppCompatActivity
     }
     public void showDiet(View v){
         Intent intent = new Intent(this,DietActivity.class);
+        startActivity(intent);
+    }
+    public void showProduct(View v){
+        Intent intent = new Intent(this,ProductActivity.class);
         startActivity(intent);
     }
 

@@ -1,4 +1,4 @@
-package com.anton.dietpro;
+package com.anton.dietpro.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.anton.dietpro.R;
 import com.anton.dietpro.adapter.DietAdapter;
 import com.anton.dietpro.models.Diet;
 import com.anton.dietpro.models.DietDB;
@@ -26,40 +27,13 @@ public class DietActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_diet);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        ListView listView = (ListView) findViewById(R.id.listView);
+        ListView listView = (ListView) findViewById(R.id.listViewDiet);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
         ArrayList<Diet> diets = new ArrayList<>();
-        DietDB dbHelper = new DietDB(this);
-        dbHelper.create_db();
-        dbHelper.open();
-        if (dbHelper.database == null){
-            Toast.makeText(this,"Нет подключения к БД",Toast.LENGTH_SHORT).show();
-            return;
-        }
-        Cursor c = dbHelper.database.rawQuery("select * from " + DietDB.TABLE_DIET,null);
-        if (c.moveToFirst()) {
-            int idColIndex = c.getColumnIndex("id");
-            int nameColIndex = c.getColumnIndex("name");
-            int descriptionColIndex = c.getColumnIndex("description");
-            int lengthColIndex = c.getColumnIndex("length");
-
-            do {
-                Diet diet = new Diet(
-                                    Integer.valueOf(c.getString(idColIndex))
-                                    ,c.getString(nameColIndex)
-                                    ,Integer.valueOf(c.getString(lengthColIndex))
-                                    ,c.getString(descriptionColIndex)
-                                    );
-                diets.add(diet);
-            } while (c.moveToNext());
-        } else {
-            Diet emptyDiet = new Diet("Диеты не найдены",0,null);
-            diets.add(emptyDiet);
-        }
-        c.close();
+        diets = Diet.getDietList(getApplicationContext());
         DietAdapter adapterDiet = new DietAdapter(this,diets);
         listView.setAdapter(adapterDiet);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -70,7 +44,6 @@ public class DietActivity extends AppCompatActivity {
                 startActivityForResult(intent,1);
             }
         });
-        dbHelper.close();
 
     }
 
