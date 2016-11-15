@@ -44,8 +44,7 @@ public class ProductAdapter extends BaseAdapter {
     @Override
     public View getView(int position, final View convertView, ViewGroup parent) {
         View view = convertView;
-        if (view == null)
-        {
+        if (view == null){
             view = layoutInflater.inflate(R.layout.item_layout,parent,false);
         }
         Product product = getProduct(position);

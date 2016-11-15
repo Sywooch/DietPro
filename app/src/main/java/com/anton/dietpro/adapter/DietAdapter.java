@@ -43,20 +43,15 @@ public class DietAdapter extends BaseAdapter {
     @Override
     public View getView(int position, final View convertView, ViewGroup parent) {
         View view = convertView;
-        if (view == null)
-        {
+        if (view == null){
             view = layoutInflater.inflate(R.layout.item_layout,parent,false);
         }
+        Diet diet = getDiet(position);
         TextView textView = (TextView) view.findViewById(R.id.textViewItem);
-        textView.setText(getDiet(position).getName());
-       // textView.
-
-                /*setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(view.getContext().getApplicationContext(), "Вы выбрали диету №" , Toast.LENGTH_SHORT).show();
-            }
-        });*/
+        textView.setText(diet.getName());
+        TextView textViewSub = (TextView) view.findViewById(R.id.textViewItemSub);
+        textViewSub.setText("Продолжительность " + diet.getLength() + " дней. " +
+        "Эффективность: " + " -5кг");
         return view;
     }
 

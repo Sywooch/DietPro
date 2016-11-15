@@ -13,4 +13,110 @@
     tools:context="com.anton.dietpro.activity.ProductDetailsActivity"
     tools:showIn="@layout/activity_product_details">
 
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical" >
+    <TextView
+        android:text="название"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/productName"
+        android:gravity="center_horizontal"
+        android:textSize="24sp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="right"
+        android:paddingLeft="15dp"
+        android:layout_below="@+id/productName"
+        android:id="@+id/linerPFC">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/titlePFC"
+            android:textSize="18sp"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="right"
+            android:orientation="horizontal"
+            android:layout_marginLeft="5dp">
+            <TextView
+                android:text="@string/proteinTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:text="0.0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="5dp"
+                android:id="@+id/productProtein"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="2dp"
+                android:text="@string/gr"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="right"
+            android:orientation="horizontal">
+            <TextView
+                android:text="@string/fatTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:text="0.0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="5dp"
+                android:id="@+id/productFat"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="2dp"
+                android:text="@string/gr"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="right"
+            android:orientation="horizontal">
+            <TextView
+                android:text="@string/carbohydrateTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:text="0.0"
+                android:paddingLeft="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/productCarbohydrate"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="2dp"
+                android:text="@string/gr"/>
+        </LinearLayout>
+    </LinearLayout>
+    <TextView
+        android:text=""
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/productDescription"
+        android:layout_below="@id/linerPFC"
+        android:textSize="20sp"/>
+            </RelativeLayout>
+    </ScrollView>
+
 </RelativeLayout>

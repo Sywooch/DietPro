@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 
 import com.anton.dietpro.R;
 import com.anton.dietpro.activity.DietActivity;
+import com.anton.dietpro.models.Diet;
 import com.anton.dietpro.models.DietDB;
 
 public class DietDetailsActivity extends AppCompatActivity {
@@ -38,7 +40,6 @@ public class DietDetailsActivity extends AppCompatActivity {
         if (intent.getExtras() != null) {
             dietId = Integer.valueOf(intent.getExtras().getString("dietId"));
             this.initView(dietId);
-            //Toast.makeText(this, "Вы нажали на диету " + dietId, Toast.LENGTH_SHORT).show();
         }
         else {
             Toast.makeText(this, "Произошла ошибка. Диета не найдена", Toast.LENGTH_SHORT).show();
@@ -54,22 +55,10 @@ public class DietDetailsActivity extends AppCompatActivity {
             ((Button)findViewById(R.id.acceptDiet)).setVisibility(View.GONE);
         }
         else{
-            DietDB db = new DietDB(this);
-            db.open();
-            Cursor c = db.database.rawQuery("select * from diet where id = " + dietId,null);
-            if (c.moveToFirst()){
-                String name = c.getString( c.getColumnIndex("name") );
-                String length = c.getString( c.getColumnIndex("length") );
-                String description = c.getString( c.getColumnIndex("description") );
-                dietName.setText(name);
-                dietLength.setText("Подолжительность " + length + "дней.");
-                dietDescription.setText("Описание  диеты. " + description);
-
-            }
-            else{
-                Toast.makeText(this,"Нет подключения к БД",Toast.LENGTH_SHORT);
-            }
-            db.close();
+            Diet diet = Diet.getDietById(id, getApplicationContext());
+            dietName.setText(diet.getName());
+            dietLength.setText("Подолжительность " + diet.getLength() + "дней.");
+            dietDescription.setText(Html.fromHtml(diet.getDescription()));
         }
     }
     @Override

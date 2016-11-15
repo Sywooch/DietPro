@@ -66,8 +66,7 @@ public class PFC {
      *
      * @return Количество калорий
      */
-    public double getCalories()
-    {
+    public double getCalories(){
         return ( this.protein * 4 + this.fat * 10 + this.carbohydrate * 4 );
     }
     /**

@@ -102,4 +102,34 @@ public class Diet {
         return diets;
     }
 
+    public static Diet getDietById(long id, Context context){
+        Diet diet;
+        DietDB dbHelper = new DietDB(context);
+        dbHelper.create_db();
+        dbHelper.open();
+        if (dbHelper.database == null){
+            Toast.makeText(context,"Нет подключения к БД",Toast.LENGTH_SHORT).show();
+            return null;
+        }
+        Cursor c = dbHelper.database.rawQuery("select * from " + DietDB.TABLE_DIET +
+                " where id = " + id + " limit 1",null);
+        if (c.moveToFirst()) {
+            int idColIndex = c.getColumnIndex("id");
+            int nameColIndex = c.getColumnIndex("name");
+            int descriptionColIndex = c.getColumnIndex("description");
+            int lengthColIndex = c.getColumnIndex("length");
+            diet = new Diet(
+                    Integer.valueOf(c.getString(idColIndex))
+                    ,c.getString(nameColIndex)
+                    ,Integer.valueOf(c.getString(lengthColIndex))
+                    ,c.getString(descriptionColIndex)
+            );
+        } else {
+            diet = new Diet("Диеты не найдены",0,null);
+        }
+        c.close();
+        dbHelper.close();
+        return diet;
+    }
+
 }
