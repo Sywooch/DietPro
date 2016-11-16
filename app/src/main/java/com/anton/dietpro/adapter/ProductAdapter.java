@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.anton.dietpro.R;
 import com.anton.dietpro.models.Diet;
+import com.anton.dietpro.models.Product;
 
 import java.util.List;
 
@@ -16,11 +17,11 @@ import java.util.List;
  * Created by admin on 07.11.16.
  */
 
-public class DietAdapter extends BaseAdapter {
-    private List<Diet> list;
+public class ProductAdapter extends BaseAdapter {
+    private List<Product> list;
     private LayoutInflater layoutInflater;
 
-    public DietAdapter(Context contex, List<Diet> list) {
+    public ProductAdapter(Context contex, List<Product> list) {
         this.list = list;
         layoutInflater = (LayoutInflater) contex.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
@@ -46,17 +47,17 @@ public class DietAdapter extends BaseAdapter {
         if (view == null){
             view = layoutInflater.inflate(R.layout.item_layout,parent,false);
         }
-        Diet diet = getDiet(position);
+        Product product = getProduct(position);
         TextView textView = (TextView) view.findViewById(R.id.textViewItem);
-        textView.setText(diet.getName());
+        textView.setText(product.getName());
         TextView textViewSub = (TextView) view.findViewById(R.id.textViewItemSub);
-        textViewSub.setText("Продолжительность " + diet.getLength() + " дней. " +
-        "Эффективность: " + " -5кг");
+        textViewSub.setText("Белки " + product.getPfc().getProtein() + ", Жиры "
+        + product.getPfc().getFat() + ", Углеводы " + product.getPfc().getCarbohydrate());
         return view;
     }
 
-    private Diet getDiet(int position){
-        return (Diet)getItem(position);
+    private Product getProduct(int position){
+        return (Product)getItem(position);
     }
 
 }

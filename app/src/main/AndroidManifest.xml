@@ -9,7 +9,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -19,20 +19,24 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".CalcActivity"
+            android:name=".activity.CalcActivity"
             android:label="@string/title_activity_calc"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".ProductActivity"
+            android:name=".activity.ProductActivity"
             android:label="@string/title_activity_product"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".DietActivity"
+            android:name=".activity.DietActivity"
             android:label="@string/title_activity_diet"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".DietDetailsActivity"
+            android:name=".activity.DietDetailsActivity"
             android:label="@string/title_activity_calc_details"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activity.ProductDetailsActivity"
+            android:label="@string/title_activity_product_details"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

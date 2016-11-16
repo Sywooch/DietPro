@@ -6,9 +6,11 @@ package com.anton.dietpro.models;
 
 public class PFC {
     final double DJ = 4.1868;
+
+
     private double protein;///< Количество белка
     private double fat;///< Количество жиров
-    private double carbogidrate;///< Количество углеводов
+    private double carbohydrate;///< Количество углеводов
 
     /**
      * Конструктор класса БЖУ(Белки, Жиры, Углеводы)
@@ -30,7 +32,33 @@ public class PFC {
     public PFC(double protein, double fat, double carbogidrate) {
         this.protein = protein;
         this.fat = fat;
-        this.carbogidrate = carbogidrate;
+        this.carbohydrate = carbogidrate;
+    }
+
+
+    public double getFat() {
+        return fat;
+    }
+
+    public void setFat(double fat) {
+        this.fat = fat;
+    }
+
+    public double getCarbohydrate() {
+        return carbohydrate;
+    }
+
+    public void setCarbohydrate(double carbohydrate) {
+        this.carbohydrate = carbohydrate;
+    }
+
+    public double getProtein() {
+
+        return protein;
+    }
+
+    public void setProtein(double protein) {
+        this.protein = protein;
     }
 
     /**
@@ -38,9 +66,8 @@ public class PFC {
      *
      * @return Количество калорий
      */
-    public double getCalories()
-    {
-        return ( this.protein * 4 + this.fat * 10 + this.carbogidrate * 4 );
+    public double getCalories(){
+        return ( this.protein * 4 + this.fat * 10 + this.carbohydrate * 4 );
     }
     /**
      * Расчет энергетической ценности в Джоулях
