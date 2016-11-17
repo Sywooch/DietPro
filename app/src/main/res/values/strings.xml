@@ -25,4 +25,21 @@
     <string name="fatTitle">Жиры</string>
     <string name="carbohydrateTitle">Углеводы</string>
     <string name="gr">гр.</string>
+    <string name="menu_my">Мои данные</string>
+    <string name="title_activity_my_data">Мои данные</string>
+    <string name="labelName">Имя</string>
+    <string name="btnSave">Сохранить</string>
+    <string name="labelTastePreferences">Вкусовые предпочтения</string>
+    <string name="label_sex_male">Мужской</string>
+    <string name="label_sex_female">Женский</string>
+    <string name="label_body_type_ect">Эктоморф</string>
+    <string name="label_body_type_mezo">Мезоморф</string>
+    <string name="label_body_type_endo">Эндоморф</string>
+    <string name="labelRadioGroupSex">Пол</string>
+    <string name="labelRadioGroupBodyType">Тип телосложения</string>
+    <string name="title_activity_my_diary">MyDiaryActivity</string>
+    <string name="headerDay">Сегодня 01.01 2-й день</string>
+    <string name="ingestionComplete" />
+    <string name="menu_my_diary">Моя диета</string>
+
 </resources>

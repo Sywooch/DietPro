@@ -15,12 +15,15 @@ import android.widget.Toast;
 
 import com.anton.dietpro.R;
 import com.anton.dietpro.models.CalcCalories;
+import com.anton.dietpro.models.UserData;
+import com.google.gson.Gson;
 
 public class CalcActivity extends AppCompatActivity {
 
     private EditText editAge;
     private EditText editWeight;
     private EditText editHeight;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,22 +35,24 @@ public class CalcActivity extends AppCompatActivity {
         editAge = ((EditText)findViewById(R.id.editText6));
         editWeight = ((EditText)findViewById(R.id.editText5));
         editHeight = ((EditText)findViewById(R.id.editText11));
-        SharedPreferences shared = getPreferences(MODE_PRIVATE);
-        Integer myAge = shared.getInt("myAge", 0);
-        Float myWeight = shared.getFloat("myWeight", 0);
-        Float myHeight = shared.getFloat("myHeight", 0);
-        if (myAge > 0){
-            editAge.setText(String.valueOf(myAge));
-        }
-        if (myWeight > 0){
-            editWeight.setText(String.valueOf(myWeight));
-        }
-        if (myHeight > 0){
-            editHeight.setText(String.valueOf(myHeight));
-        }
-        Toast.makeText(getApplicationContext(), "age = " + myAge + ", weight = "
-        + myWeight + ", height = " + myHeight, Toast.LENGTH_SHORT).show();
+        readPreferences();
     }
+
+    private void readPreferences() {
+        UserData user = UserData.readPref(getApplicationContext());
+        if (user != null) {
+            if (user.getAge() > 0) {
+                editAge.setText(String.valueOf(user.getAge()));
+            }
+            if (user.getWeight() > 0) {
+                editWeight.setText(String.valueOf(user.getWeight()));
+            }
+            if (user.getHeight() > 0) {
+                editHeight.setText(String.valueOf(user.getHeight()));
+            }
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -97,21 +102,14 @@ public class CalcActivity extends AppCompatActivity {
     }
 
     private void saveData(){
-        SharedPreferences sPref = getPreferences(MODE_PRIVATE);
-        SharedPreferences.Editor ed = sPref.edit();
-        Integer myAge = Integer.valueOf(editAge.getText().toString());
+         UserData user = UserData.readPref(getApplicationContext());
+        Integer myAge = Integer.valueOf(editAge.getText().toString() );
         Float myWeight = Float.valueOf(editWeight.getText().toString());
         Float myHeight = Float.valueOf(editHeight.getText().toString());
-        if (myAge != null) {
-            ed.putInt("myAge", myAge);
-        }
-        if(myWeight != null) {
-            ed.putFloat("myWeight", myWeight);
-        }
-        if(myHeight != null) {
-            ed.putFloat("myHeight", myHeight);
-        }
-        ed.apply();
+        user.setAge(myAge);
+        user.setWeight(myWeight);
+        user.setHeight(myHeight);
+        user.savePref(getApplicationContext());
     }
 
     @Override

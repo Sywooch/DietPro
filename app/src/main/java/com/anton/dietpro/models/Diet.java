@@ -12,8 +12,22 @@ import java.util.ArrayList;
  */
 
 public class Diet {
+    public static final String TABLE_NAME = "diet";
+
+    private int id;
+    private String name;
+    private int length;
+    private String description;
     public Diet(int id, String name, int length, String description) {
         this.id = id;
+        this.name = name;
+        this.length = length;
+        this.description = description;
+    }
+    public Diet() {
+    }
+
+    public Diet(String name, int length, String description) {
         this.name = name;
         this.length = length;
         this.description = description;
@@ -26,8 +40,6 @@ public class Diet {
     public void setId(int id) {
         this.id = id;
     }
-
-    private int id;
     public String getName() {
         return name;
     }
@@ -36,7 +48,6 @@ public class Diet {
         this.name = name;
     }
 
-    private String name;
 
     public int getLength() {
         return length;
@@ -46,7 +57,6 @@ public class Diet {
         this.length = length;
     }
 
-    private int length;
 
     public String getDescription() {
         return description;
@@ -56,16 +66,6 @@ public class Diet {
         this.description = description;
     }
 
-    private String description;
-
-    public Diet() {
-    }
-
-    public Diet(String name, int length, String description) {
-        this.name = name;
-        this.length = length;
-        this.description = description;
-    }
 
     public static ArrayList<Diet> getDietList(Context context){
 
@@ -132,4 +132,7 @@ public class Diet {
         return diet;
     }
 
+    public static Integer getCurrentDietId() {
+        return 2; // реализовать чтение из SharedPreferences
+    }
 }

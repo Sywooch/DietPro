@@ -37,6 +37,14 @@
         <activity
             android:name=".activity.ProductDetailsActivity"
             android:label="@string/title_activity_product_details"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activity.MyDataActivity"
+            android:label="@string/title_activity_my_data"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activity.MyDiaryActivity"
+            android:label="@string/title_activity_my_diary"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

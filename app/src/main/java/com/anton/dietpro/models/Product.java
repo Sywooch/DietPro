@@ -15,6 +15,7 @@ import java.util.ArrayList;
 public class Product {
 
 
+    public static final String TABLE_NAME = "product";
     private int id;
     private PFC pfc; /// < Содержит БЖУ
     private String name; /// < Название продукта
