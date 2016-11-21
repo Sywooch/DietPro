@@ -37,9 +37,11 @@
     <string name="label_body_type_endo">Эндоморф</string>
     <string name="labelRadioGroupSex">Пол</string>
     <string name="labelRadioGroupBodyType">Тип телосложения</string>
-    <string name="title_activity_my_diary">MyDiaryActivity</string>
+    <string name="title_activity_my_diary">Моя диета</string>
     <string name="headerDay">Сегодня 01.01 2-й день</string>
-    <string name="ingestionComplete" />
+    <string name="ingestionComplete">Выполнено</string>
     <string name="menu_my_diary">Моя диета</string>
+    <string name="amoutKkalItem">%.2f гр.</string>
+    <string name="productComplete">Скушано</string>
 
 </resources>
