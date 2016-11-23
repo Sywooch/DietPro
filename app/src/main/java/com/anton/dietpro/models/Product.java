@@ -19,8 +19,9 @@ public class Product {
     private int id;
     private PFC pfc; /// < Содержит БЖУ
     private String name; /// < Название продукта
-    private float weight; /// < масса продукта в граммах
+    private Double weight; /// < масса продукта в граммах
     private String description; /// <описание продукта
+    private String url; /// < url картинки
 
     public Product() {
         this.id = 0;
@@ -45,11 +46,11 @@ public class Product {
     public void setName(String name) {
         this.name = name;
     }
-    public float getWeight() {
+    public Double getWeight() {
         return this.weight;
     }
 
-    public void setWeight(float weight) {
+    public void setWeight(Double weight) {
         this.weight = weight;
     }
 
@@ -69,6 +70,13 @@ public class Product {
         this.description = description;
     }
 
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
     /**
      * Расчет калорийности продукта
@@ -84,7 +92,7 @@ public class Product {
      *
      * @return Количество калорий в указанной массе продукта
      */
-    public double getCalories(float weight) {
+    public double getCalories(Double weight) {
         this.setWeight(weight);
         return this.weight * pfc.getCalories();
     }
@@ -105,6 +113,7 @@ public class Product {
             int proteinColIndex = c.getColumnIndex("protein");
             int fatColIndex = c.getColumnIndex("fat");
             int carbohydrateColIndex = c.getColumnIndex("carbohydrate");
+            int urlColIndex = c.getColumnIndex("img");
 
             do {
                 Product product = new Product();
@@ -112,6 +121,7 @@ public class Product {
                 product.setName(c.getString(nameColIndex));
                 product.setPfc(new PFC(c.getDouble(proteinColIndex), c.getDouble(fatColIndex)
                                 , c.getDouble(carbohydrateColIndex)));
+                product.setUrl(c.getString(urlColIndex));
                 products.add(product);
             } while (c.moveToNext());
         } else {
@@ -132,18 +142,23 @@ public class Product {
             Toast.makeText(context,"Нет подключения к БД",Toast.LENGTH_SHORT).show();
             return null;
         }
-        Cursor c = dbHelper.database.rawQuery("select * from " + DietDB.TABLE_PRODUCT,null);
+        Cursor c = dbHelper.database.rawQuery("select * from " + DietDB.TABLE_PRODUCT
+                + " where id = " + id + " limit 1",null);
         if (c.moveToFirst()) {
             int idColIndex = c.getColumnIndex("id");
             int nameColIndex = c.getColumnIndex("name");
             int proteinColIndex = c.getColumnIndex("protein");
             int fatColIndex = c.getColumnIndex("fat");
             int carbohydrateColIndex = c.getColumnIndex("carbohydrate");
+            int urlColIndex = c.getColumnIndex("img");
+
             product = new Product();
             product.setId(Integer.valueOf(c.getString(idColIndex)));
             product.setName(c.getString(nameColIndex));
             product.setPfc(new PFC(c.getDouble(proteinColIndex), c.getDouble(fatColIndex)
                     , c.getDouble(carbohydrateColIndex)));
+            product.setUrl(c.getString(urlColIndex))
+            ;
         } else {
             product = new Product("Продукты не найдены");
         }

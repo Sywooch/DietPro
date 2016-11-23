@@ -36,6 +36,7 @@ public class MyDiaryActivity extends AppCompatActivity {
         ListView listNutrition = (ListView)findViewById(R.id.listNutrition);
         listNutrition.setAdapter(adapterNutrition);
 
+
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.anton.dietpro.activity;
 
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -11,12 +12,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anton.dietpro.R;
 import com.anton.dietpro.models.Diet;
 import com.anton.dietpro.models.Product;
+import com.squareup.picasso.Picasso;
+
+import static com.anton.dietpro.R.id.imageView;
 
 public class ProductDetailsActivity extends AppCompatActivity {
 
@@ -25,6 +30,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
     private TextView productProtein;
     private TextView productFat;
     private TextView productCarbohydrate;
+    private ImageView productUrl;
     private Intent intent;
     private long productId;
 
@@ -41,6 +47,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
         productProtein = (TextView) findViewById(R.id.productProtein);
         productFat = (TextView) findViewById(R.id.productFat);
         productCarbohydrate = (TextView) findViewById(R.id.productCarbohydrate);
+        productUrl = (ImageView) findViewById(R.id.productImg);
         intent = getIntent();
         if (intent.getExtras() != null) {
             productId = Integer.valueOf(intent.getExtras().getString("productId"));
@@ -63,6 +70,12 @@ public class ProductDetailsActivity extends AppCompatActivity {
             productProtein.setText(String.valueOf(product.getPfc().getProtein()) + " гр.");
             productFat.setText(String.valueOf(product.getPfc().getFat()) + " гр.");
             productCarbohydrate.setText(String.valueOf(product.getPfc().getCarbohydrate()) + " гр.");
+            if( product.getUrl() != "") {
+                Picasso.with(getApplicationContext())
+                        .load(product.getUrl())
+                        .into(productUrl);
+            }
+
         }
     }
     @Override
