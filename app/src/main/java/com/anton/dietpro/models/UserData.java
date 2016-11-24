@@ -5,6 +5,10 @@ import android.content.SharedPreferences;
 
 import com.google.gson.Gson;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
+
 /**
  * Created by admin on 17.11.16.
  */
@@ -24,6 +28,8 @@ public class UserData {
     private Float weight = 0.0f;
     private Integer sex = 0;
     private Integer bodyType = 0;
+    private Integer dietId = 0;
+    private Date dietDateStart;
 
     public UserData() {
         this.name = "";
@@ -33,6 +39,7 @@ public class UserData {
         this.weight = 0.0f;
         this.sex = 0;
         this.bodyType = 0;
+        this.dietDateStart = null;
     }
 
     public String getName() {
@@ -90,6 +97,30 @@ public class UserData {
     public void setTastePreferences(String tastePreferences) {
         this.tastePreferences = tastePreferences;
     }
+
+    public Integer getDietId() {
+        return dietId;
+    }
+
+    public void setDietId(Integer dietId) {
+        this.dietId = dietId;
+    }
+
+    public Date getDietDateStart() {
+        return dietDateStart;
+    }
+
+    public void setDietDateStart(Date dietDateStart) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeZone(TimeZone.getTimeZone("Europe/Moscow"));
+        calendar.setTime(dietDateStart);
+        calendar.set( Calendar.HOUR_OF_DAY, 0 );
+        calendar.set( Calendar.MINUTE, 0 );
+        calendar.set( Calendar.SECOND, 0 );
+        dietDateStart = calendar.getTime();
+        this.dietDateStart = dietDateStart;
+    }
+
     public void savePref(Context context){
         SharedPreferences sPref = context.getSharedPreferences(UserData.MY_PREF, context.MODE_PRIVATE);
         SharedPreferences.Editor ed = sPref.edit();

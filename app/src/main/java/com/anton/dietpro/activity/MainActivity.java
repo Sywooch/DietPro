@@ -102,5 +102,9 @@ public class MainActivity extends AppCompatActivity
         Intent intent = new Intent(this,ProductActivity.class);
         startActivity(intent);
     }
+    public void showMyDiary(View v){
+        Intent intent = new Intent(this, MyDiaryActivity.class);
+        startActivity(intent);
+    }
 
 }
