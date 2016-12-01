@@ -1,10 +1,8 @@
 package com.anton.dietpro.models;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
 import android.widget.Toast;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,8 +58,8 @@ public class Nutrition {
 
     public Double getAmountKkal() {
         Double amountKkal = 0.0;
-        for (Integer i = 0; i<products.size() ; i++){
-            amountKkal += products.get(i).getCalories();
+        for (Integer i = 0; i<this.products.size() ; i++){
+            amountKkal += this.products.get(i).getCalories();
         }
         return amountKkal;
     }
@@ -79,7 +77,7 @@ public class Nutrition {
     public static ArrayList<Product> getNutritionProducts(long day, long idIngestion, Context context){
         try {
             ArrayList<Product> products = new ArrayList<>();
-            Integer idDiet = Diet.getCurrentDietId();
+            Integer idDiet = Diet.getCurrentDietId(context);
             Nutrition nutrition = new Nutrition();
             DietDB dbHelper = new DietDB(context);
             dbHelper.create_db();
@@ -125,6 +123,7 @@ public class Nutrition {
                             , c.getDouble(carbohydrateColIndex)));
                     product.setUrl(c.getString(urlColIndex));
                     product.setWeight(c.getDouble(weightColIndex));
+                    product.setNutritionId(c.getInt(nutritionIdColIndex));
                     products.add(product);
                 } while (c.moveToNext());
             } else {
@@ -153,7 +152,7 @@ public class Nutrition {
     *
      * **/
     public static Nutrition getNutritionById(long day, long idIngestion, Context context){
-        Integer idDiet = Diet.getCurrentDietId();
+        Integer idDiet = Diet.getCurrentDietId(context);
         Nutrition nutrition = new Nutrition();
         DietDB dbHelper = new DietDB(context);
         dbHelper.create_db();
@@ -165,46 +164,16 @@ public class Nutrition {
         Cursor c = dbHelper.database.rawQuery("select "
                 + Nutrition.TABLE_MENU_NAME + ".id as id ,"
                 + Nutrition.TABLE_MENU_NAME + ".day as day ,"
-                + Nutrition.TABLE_INGESTION_NAME + ".name as ingestion_name "/*
-                + Nutrition.TABLE_NUTRITION_NAME + ".id as nutrition_id ,"
-                + Nutrition.TABLE_NUTRITION_NAME + ".weight as weight ,"
-                + Product.TABLE_NAME + ".name as name ,"
-                + Product.TABLE_NAME + ".protein as protein ,"
-                + Product.TABLE_NAME + ".fat as fat ,"
-                + Product.TABLE_NAME + ".carbohydrate as carbohydrate "*/
+                + Nutrition.TABLE_INGESTION_NAME + ".name as ingestion_name "
                 + " from "
                 + Nutrition.TABLE_MENU_NAME
                 + " inner join " + Nutrition.TABLE_INGESTION_NAME
                 + " on " + Nutrition.TABLE_MENU_NAME + ".id_ingestion = " + Nutrition.TABLE_INGESTION_NAME + ".id "
-                /*+ " inner join " + Nutrition.TABLE_NUTRITION_NAME
-                + " on " + Nutrition.TABLE_MENU_NAME + ".id = " + Nutrition.TABLE_NUTRITION_NAME + ".id_menu "
-                + " inner join " + Product.TABLE_NAME
-                + " on " + Nutrition.TABLE_MENU_NAME + ".id_product = " + Product.TABLE_NAME + ".id "*/
                 + " where " + Nutrition.TABLE_MENU_NAME + ".id_diet = " + idDiet
                 + " and " + Nutrition.TABLE_MENU_NAME + ".day = " + day
                 + " and " + Nutrition.TABLE_INGESTION_NAME + ".id = " + idIngestion
                 ,null);
 
-        /*
-        * select
-menu.id
-,menu.day
-,menu.datetime
-,nutrition.id as nutrition_id
-,nutrition.weight
-,ingestion.name as ingestion_name
-,product.name as product_name
-,product.protein
-,product.fat
-,product.carbohydrate
-from
-menu inner join ingestion
-    on menu.id_ingestion = ingestion.id
-    inner join nutrition
-        on menu.id = nutrition.id_menu
-        inner join product
-            on nutrition.id_product = product.id
-        * */
         if (c.moveToFirst()) {
             int idColIndex = c.getColumnIndex("id");
             int nameColIndex = c.getColumnIndex("ingestion_name");
@@ -212,15 +181,58 @@ menu inner join ingestion
             nutrition.setId(Integer.valueOf(c.getString(idColIndex)));
             nutrition.setName(c.getString(nameColIndex));
             nutrition.setDay(Integer.valueOf(c.getString(dayColIndex)));
-            List<Product> products = new ArrayList<Product>();
+            List<Product> products = new ArrayList<>();
             nutrition.setProducts(products);
 
-        } else {
-//            nutrition = new nutrition("Прием пищи не найден",0,null);
         }
         c.close();
         dbHelper.close();
         return nutrition;
     }
 
+    public static ArrayList<Nutrition> getNutritionsByDay(long day, Context context) {
+        Integer idDiet = Diet.getCurrentDietId(context);
+        ArrayList<Nutrition> nutritions = new ArrayList<>();
+        DietDB dbHelper = new DietDB(context);
+        dbHelper.create_db();
+        dbHelper.open();
+        if (dbHelper.database == null){
+            Toast.makeText(context,"Нет подключения к БД",Toast.LENGTH_SHORT).show();
+            return null;
+        }
+        String query = "select "
+                + Nutrition.TABLE_MENU_NAME + ".id as id ,"
+                + Nutrition.TABLE_MENU_NAME + ".day as day ,"
+                + Nutrition.TABLE_INGESTION_NAME + ".id as ingestion_id ,"
+                + Nutrition.TABLE_INGESTION_NAME + ".name as ingestion_name "
+                + " from "
+                + Nutrition.TABLE_MENU_NAME
+                + " inner join " + Nutrition.TABLE_INGESTION_NAME
+                + " on " + Nutrition.TABLE_MENU_NAME + ".id_ingestion = " + Nutrition.TABLE_INGESTION_NAME + ".id "
+                + " where " + Nutrition.TABLE_MENU_NAME + ".id_diet = " + idDiet
+                + " and " + Nutrition.TABLE_MENU_NAME + ".day = " + day;
+        Log.d("SQL",query);
+        Cursor c = dbHelper.database.rawQuery(query
+                ,null);
+
+        if (c.moveToFirst()) {
+            int idColIndex = c.getColumnIndex("id");
+            int nameColIndex = c.getColumnIndex("ingestion_name");
+            int dayColIndex = c.getColumnIndex("day");
+            int ingestionIdColIndex = c.getColumnIndex("ingestion_id");
+            do {
+                Nutrition nutrition = new Nutrition();
+                nutrition.setId(Integer.valueOf(c.getString(idColIndex)));
+                nutrition.setName(c.getString(nameColIndex));
+                nutrition.setDay(Integer.valueOf(c.getString(dayColIndex)));
+                List<Product> products = Nutrition.getNutritionProducts(nutrition.getDay(),c.getInt(ingestionIdColIndex),context);
+                nutrition.setProducts(products);
+                nutritions.add(nutrition);
+            }while(c.moveToNext());
+
+        }
+        c.close();
+        dbHelper.close();
+        return nutritions;
+    }
 }

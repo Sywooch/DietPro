@@ -22,12 +22,19 @@ public class Product {
     private Double weight; /// < масса продукта в граммах
     private String description; /// <описание продукта
     private String url; /// < url картинки
+    private Integer nutritionId;
 
     public Product() {
         this.id = 0;
+        this.nutritionId = 0;
+        this.pfc = new PFC();
     }
 
     public Product(String name) {
+
+        this.id = 0;
+        this.nutritionId = 0;
+        this.pfc = new PFC();
         this.name = name;
     }
 
@@ -71,11 +78,19 @@ public class Product {
     }
 
     public String getUrl() {
-        return url;
+        return this.url;
     }
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public Integer getNutritionId() {
+        return nutritionId;
+    }
+
+    public void setNutritionId(Integer nutritionId) {
+        this.nutritionId = nutritionId;
     }
 
     /**
@@ -85,7 +100,7 @@ public class Product {
      */
     public double getCalories()
     {
-        return this.weight * pfc.getCalories();
+        return (this.weight/100) * pfc.getCalories();
     }
     /**
      * Расчет калорийности продукта

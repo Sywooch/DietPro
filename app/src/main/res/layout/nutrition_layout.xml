@@ -3,29 +3,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-<ScrollView
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
     <TextView
         android:text="TextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="18sp"
+        android:textStyle="bold|italic"
         android:id="@+id/ingestionName" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:focusable="false"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:id="@+id/button3"
+        android:id="@+id/ingestionCompelete"
         android:text="@string/ingestionComplete"/>
     <TextView
-        android:text="TextView"
+        android:text="@string/amountKkal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
@@ -39,12 +35,11 @@
     <com.anton.dietpro.models.ExpandedListView
         android:layout_width="match_parent"
         android:layout_height="350dp"
+        android:focusable="false"
         android:id="@+id/listProductNutrition"
         android:layout_marginTop="10dp"
         android:layout_marginLeft="60dp"
         android:layout_marginRight="12dp"
         />
     </LinearLayout>
-    </RelativeLayout>
-</ScrollView>
 </RelativeLayout>

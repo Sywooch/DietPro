@@ -1,11 +1,15 @@
 package com.anton.dietpro.models;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.widget.Toast;
 import org.w3c.dom.Text;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by admin on 02.11.16.
@@ -132,7 +136,25 @@ public class Diet {
         return diet;
     }
 
-    public static Integer getCurrentDietId() {
-        return 2; // реализовать чтение из SharedPreferences
+    public static Integer getCurrentDietId(Context context) {
+        UserData data = UserData.readPref(context);
+        return data.getDietId();
+    }
+    public static void setCurrentDietId(Context context, Integer dietId){
+        UserData data = UserData.readPref(context);
+        data.setDietId(dietId);
+        data.savePref(context);
+
+    }
+
+    public static Date getCurrentDietDate(Context context) {
+        UserData data = UserData.readPref(context);
+        return data.getDietDateStart();
+    }
+    public static void setCurrentDietDate(Context context, Date dietDate){
+        UserData data = UserData.readPref(context);
+        data.setDietDateStart(dietDate);
+        data.savePref(context);
+
     }
 }

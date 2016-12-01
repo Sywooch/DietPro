@@ -38,10 +38,11 @@
     <string name="labelRadioGroupSex">Пол</string>
     <string name="labelRadioGroupBodyType">Тип телосложения</string>
     <string name="title_activity_my_diary">Моя диета</string>
-    <string name="headerDay">Сегодня 01.01 2-й день</string>
+    <string name="headerDay">Сегодня %1$s %2$d-й день</string>
     <string name="ingestionComplete">Выполнено</string>
     <string name="menu_my_diary">Моя диета</string>
     <string name="amoutKkalItem">%.2f гр.</string>
     <string name="productComplete">Скушано</string>
+    <string name="amountKkal">%d ккал</string>
 
 </resources>

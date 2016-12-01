@@ -16,13 +16,16 @@
         android:layout_height="wrap_content"
         android:id="@+id/productName"
         android:layout_toRightOf="@id/productImg"/>
-    <Button
-        android:layout_width="50dp"
+    <ToggleButton
+        android:layout_width="30dp"
         android:layout_height="30dp"
+        android:focusable="false"
+        android:textOn=""
+        android:textOff=""
         android:id="@+id/productComplete"
-        android:text="@string/productComplete"
         android:textSize="5sp"
         android:layout_alignParentRight="true"
+        android:background="@drawable/nutrition_product_complete"
         />
     <TextView
         android:text="@string/amoutKkalItem"

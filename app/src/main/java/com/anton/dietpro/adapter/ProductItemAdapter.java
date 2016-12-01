@@ -8,8 +8,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
+import android.widget.ToggleButton;
 import com.anton.dietpro.R;
+import com.anton.dietpro.models.Diary;
 import com.anton.dietpro.models.Product;
 import com.squareup.picasso.Picasso;
 
@@ -40,7 +41,7 @@ public class ProductItemAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
-        return list.get(position).getId();
+        return list.get(position).getNutritionId();
     }
 
     @Override
@@ -53,15 +54,20 @@ public class ProductItemAdapter extends BaseAdapter {
         TextView productName = (TextView) view.findViewById(R.id.productName);
         TextView amountKkal = (TextView) view.findViewById(R.id.amountKkal);
         ImageView productImg = (ImageView) view.findViewById(R.id.productImg);
+        ToggleButton productComplete = (ToggleButton) view.findViewById(R.id.productComplete);
+        if(Diary.isCompleteNutrition(view.getContext(), product.getNutritionId())){
+            productComplete.setChecked(true);
+        }
+        if(product.getUrl() != "" &&  product.getUrl() != null) {
+            if (product.getUrl().trim().length() > 0) {
+                Picasso.with(parent.getContext())
+                        .load(product.getUrl())
+                        .into(productImg);
 
-        if(product.getUrl() != "") {
-            Picasso.with(parent.getContext())
-                    .load(product.getUrl())
-                    .into(productImg);
+            }
         }
         productName.setText(product.getName());
         String template = amountKkal.getText().toString();
-        Log.i("TEST", template);
         amountKkal.setText(String.format(template,product.getWeight())); //product.getPfc().getCalories()
         return view;
     }

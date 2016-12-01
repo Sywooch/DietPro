@@ -5,11 +5,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.anton.dietpro.R;
 import com.anton.dietpro.models.Diet;
 import com.anton.dietpro.models.Product;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -53,6 +55,16 @@ public class ProductAdapter extends BaseAdapter {
         TextView textViewSub = (TextView) view.findViewById(R.id.textViewItemSub);
         textViewSub.setText("Белки " + product.getPfc().getProtein() + ", Жиры "
         + product.getPfc().getFat() + ", Углеводы " + product.getPfc().getCarbohydrate());
+
+        ImageView productImg = (ImageView) view.findViewById(R.id.productImg);
+        if(product.getUrl() != "" &&  product.getUrl() != null) {
+            if (product.getUrl().trim().length() > 0) {
+                Picasso.with(parent.getContext())
+                        .load(product.getUrl())
+                        .into(productImg);
+
+            }
+        }
         return view;
     }
 

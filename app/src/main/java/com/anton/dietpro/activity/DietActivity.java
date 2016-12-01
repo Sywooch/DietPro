@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.format.DateFormat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,6 +20,8 @@ import com.anton.dietpro.models.Diet;
 import com.anton.dietpro.models.DietDB;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.TimeZone;
 
 public class DietActivity extends AppCompatActivity {
 
@@ -32,8 +35,7 @@ public class DietActivity extends AppCompatActivity {
         if (getSupportActionBar() != null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-        ArrayList<Diet> diets = new ArrayList<>();
-        diets = Diet.getDietList(getApplicationContext());
+        ArrayList<Diet> diets = Diet.getDietList(getApplicationContext());
         DietAdapter adapterDiet = new DietAdapter(this,diets);
         listView.setAdapter(adapterDiet);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -51,12 +53,15 @@ public class DietActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (data == null) {return;}
         String dietId = data.getStringExtra("dietId");
+
+        Date date = new Date();
+        java.text.DateFormat dateFormat = DateFormat.getDateFormat(getApplicationContext());
+        dateFormat.setTimeZone(TimeZone.getTimeZone("Europe/Moscow"));
         //сохраняем ИД выбранной диеты в преференцес( но мб переделаем на БД )
-        SharedPreferences sPref = getPreferences(MODE_PRIVATE);
-        SharedPreferences.Editor ed = sPref.edit();
-        ed.putString("acceptDietId",dietId);
-        ed.apply();
+        Diet.setCurrentDietId(getApplicationContext(), Integer.valueOf(dietId));
+        Diet.setCurrentDietDate(getApplicationContext(), date);
         Toast.makeText(this, "Вы сели на диету " + dietId, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Дата " + dateFormat.format(date), Toast.LENGTH_SHORT).show();
         super.onActivityResult(requestCode, resultCode, data);
     }
 
