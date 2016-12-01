@@ -20,6 +20,7 @@ public class UserData {
     public static final Integer BODY_TYPE_MESOMORPH = 2;
     public static final Integer BODY_TYPE_ENDOMORPH = 3;
     public static final String MY_PREF = "MY_PREF";
+    private static final String MY_PREF_TAG = "myData";
 
     private String name;
     private String tastePreferences;
@@ -122,11 +123,14 @@ public class UserData {
     }
 
     public void savePref(Context context){
+        //исправляем ошибки в тексте
+        API api = new API();
+        this.tastePreferences = api.doCorrection(this.tastePreferences);
         SharedPreferences sPref = context.getSharedPreferences(UserData.MY_PREF, context.MODE_PRIVATE);
         SharedPreferences.Editor ed = sPref.edit();
         Gson gson = new Gson();
         String data = gson.toJson(this);
-        ed.putString("myData", data);
+        ed.putString(UserData.MY_PREF_TAG, data);
         ed.apply();
 
     }
@@ -134,7 +138,7 @@ public class UserData {
 
         SharedPreferences shared = context.getSharedPreferences(UserData.MY_PREF, context.MODE_PRIVATE);
 
-        String myData = shared.getString("myData", "");
+        String myData = shared.getString(UserData.MY_PREF_TAG, "");
         Gson gson = new Gson();
         UserData user = gson.fromJson(myData,UserData.class);
         return (user != null ? user : new UserData());

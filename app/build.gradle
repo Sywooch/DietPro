@@ -3,15 +3,32 @@ apply plugin: 'com.android.application'
 android {
     signingConfigs {
     }
+
     compileSdkVersion 25
-    buildToolsVersion "25"
-    //buildToolsVersion "24.0.2"
+    //buildToolsVersion "25"
+
+    buildToolsVersion "23.0.2"
+
     defaultConfig {
         applicationId "com.anton.dietpro"
         minSdkVersion 15
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
+    }
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
     }
     buildTypes {
         release {
@@ -29,4 +46,11 @@ dependencies {
     compile 'com.android.support:design:25.0.1'
     compile 'com.google.code.gson:gson:2.7'
     compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.squareup.retrofit2:retrofit:2.1.0'
+
+    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
+    /*
+    compile 'com.squareup.retrofit2:converter-simplexml:2.1.0'
+    compile 'org.languagetool:language-en:3.1'
+    compile 'com.squareup.retrofit2:converter-gson:2.1.0'*/
 }

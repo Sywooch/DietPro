@@ -102,10 +102,20 @@ public class CalcActivity extends AppCompatActivity {
     }
 
     private void saveData(){
+        Integer myAge = 0;
+        Float myWeight = 0f;
+        Float myHeight = 0f;
+
          UserData user = UserData.readPref(getApplicationContext());
-        Integer myAge = Integer.valueOf(editAge.getText().toString() );
-        Float myWeight = Float.valueOf(editWeight.getText().toString());
-        Float myHeight = Float.valueOf(editHeight.getText().toString());
+        if (editAge.getText().length() > 0) {
+            myAge = Integer.valueOf(editAge.getText().toString());
+        }
+        if (editWeight.getText().length() > 0) {
+            myWeight = Float.valueOf(editWeight.getText().toString());
+        }
+        if (editHeight.getText().length() > 0) {
+            myHeight = Float.valueOf(editHeight.getText().toString());
+        }
         user.setAge(myAge);
         user.setWeight(myWeight);
         user.setHeight(myHeight);

@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 //import android.support.design.widget.FloatingActionButton;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -14,16 +16,32 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.anton.dietpro.R;
 import com.anton.dietpro.activity.CalcActivity;
 import com.anton.dietpro.activity.DietActivity;
+import com.anton.dietpro.models.API;
+import com.anton.dietpro.models.ApiYandex;
 import com.anton.dietpro.models.DietDB;
+import com.anton.dietpro.services.MyService;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    DietDB db;
+    private DietDB db;
+    public final static String TEST_STRING = "hello world";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +49,13 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        Intent intent = getIntent();
+
+
+        String fileName = intent.getStringExtra(TEST_STRING);
+        if (!TextUtils.isEmpty(fileName)){
+            Toast.makeText(this,fileName,Toast.LENGTH_LONG).show();
+        }
         db = new DietDB(this);
         db.create_db();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -74,6 +99,7 @@ public class MainActivity extends AppCompatActivity
     }
     public void showCalc(View view)
     {
+        //stopService(new Intent(this, MyService.class));
         Intent intent = new Intent(this,CalcActivity.class);
         startActivity(intent);
     }
@@ -103,6 +129,7 @@ public class MainActivity extends AppCompatActivity
         startActivity(intent);
     }
     public void showMyDiary(View v){
+        //startService(new Intent(this, MyService.class));
         Intent intent = new Intent(this, MyDiaryActivity.class);
         startActivity(intent);
     }

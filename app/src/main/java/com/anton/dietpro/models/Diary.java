@@ -118,6 +118,7 @@ public class Diary {
         }
         dbHelper.database.beginTransaction();
         int count = dbHelper.database.delete(Diary.TABLE_DIARY_NAME, "id_nutrition = " + nutrition_id,null);
+        Log.d("SQL",Diary.TABLE_DIARY_NAME+  "; id_nutrition = " + nutrition_id);
         dbHelper.database.setTransactionSuccessful();
         dbHelper.database.endTransaction();
         dbHelper.close();
@@ -181,5 +182,38 @@ public class Diary {
         dbHelper.close();
         return false;
 
+    }
+
+    public static boolean isCompleteMenu(Context context, long itemId) {
+        if (itemId <1 ){
+            return false;
+        }
+        DietDB dbHelper = new DietDB(context);
+        dbHelper.create_db();
+        dbHelper.open();
+        if (dbHelper.database == null){
+            Toast.makeText(context,"Нет подключения к БД",Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        Log.d("INGESTION2","select count_plan as plan" +
+                ", count_fakt as fakt from (select count(*) as count_plan from nutrition where nutrition.id_menu = " + itemId + " ) as plan_table" +
+                ", (select count(*) as count_fakt from nutrition inner join diary on nutrition.id = diary.id_nutrition" +
+                " where nutrition.id_menu = " + itemId + " ) as fakt_table " +
+                " limit 1");
+        Cursor c = dbHelper.database.rawQuery("select count_plan as plan" +
+                ", count_fakt as fakt from (select count(*) as count_plan from nutrition where nutrition.id_menu = " + itemId + " ) as plan_table" +
+                ", (select count(*) as count_fakt from nutrition inner join diary on nutrition.id = diary.id_nutrition" +
+                " where nutrition.id_menu = " + itemId + " ) as fakt_table " +
+                " limit 1",null);
+        if (c.moveToFirst()) {
+            int planColIndex = c.getColumnIndex("plan");
+            int faktColIndex = c.getColumnIndex("fakt");
+            if (c.getInt(planColIndex) == c.getInt(faktColIndex)){
+                return true;
+            }
+        }
+        c.close();
+        dbHelper.close();
+        return false;
     }
 }

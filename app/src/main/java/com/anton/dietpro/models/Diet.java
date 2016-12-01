@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * Created by admin on 02.11.16.
@@ -156,5 +157,22 @@ public class Diet {
         data.setDietDateStart(dietDate);
         data.savePref(context);
 
+    }
+
+    public static long getCurrentDietDay(Context context) {
+        Date today = new Date();
+        SimpleDateFormat df = new SimpleDateFormat("dd.MM");
+        df.setTimeZone(TimeZone.getTimeZone("Europe/Moscow"));
+
+        Date beginDay = Diet.getCurrentDietDate(context);
+        if (beginDay == null ){
+            Toast.makeText(context,"Вы не выбрали диету.",Toast.LENGTH_LONG).show();
+            return 0;
+        }
+        long diff = today.getTime() - beginDay.getTime();
+        long day = diff / (24 * 60 * 60 * 1000);
+        long hours = diff / ( 60 * 60 * 1000);
+        day++;
+        return day;
     }
 }

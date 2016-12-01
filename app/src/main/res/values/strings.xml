@@ -44,5 +44,6 @@
     <string name="amoutKkalItem">%.2f гр.</string>
     <string name="productComplete">Скушано</string>
     <string name="amountKkal">%d ккал</string>
+    <string name="templatePFC">%.2f гр.</string>
 
 </resources>

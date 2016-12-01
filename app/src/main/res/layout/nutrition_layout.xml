@@ -10,16 +10,19 @@
         android:textSize="18sp"
         android:textStyle="bold|italic"
         android:id="@+id/ingestionName" />
-
-    <Button
+    <ToggleButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:focusable="false"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/colorWhite"
+        android:padding="10dp"
         android:layout_alignParentEnd="true"
         android:id="@+id/ingestionCompelete"
-        android:text="@string/ingestionComplete"/>
+        android:textOn="@string/ingestionComplete"
+        android:textOff="@string/ingestionComplete"/>
     <TextView
         android:text="@string/amountKkal"
         android:layout_width="wrap_content"
