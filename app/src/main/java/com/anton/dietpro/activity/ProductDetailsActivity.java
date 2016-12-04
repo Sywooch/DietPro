@@ -67,12 +67,14 @@ public class ProductDetailsActivity extends AppCompatActivity {
             Product product = Product.getProductById(id, getApplicationContext());
             productName.setText(product.getName());
             productDescription.setText(Html.fromHtml("Описание продукта"/*String.valueOf(product.getDescription())*/));
-            productProtein.setText(String.valueOf(product.getPfc().getProtein()) + " гр.");
-            productFat.setText(String.valueOf(product.getPfc().getFat()) + " гр.");
-            productCarbohydrate.setText(String.valueOf(product.getPfc().getCarbohydrate()) + " гр.");
+            productProtein.setText(String.format(productProtein.getText().toString(), (float)product.getPfc().getProtein()));
+            productFat.setText(String.format(productProtein.getText().toString(), ((float)product.getPfc().getFat())));
+            productCarbohydrate.setText(String.format(productProtein.getText().toString(), (float)product.getPfc().getCarbohydrate()));
             if( product.getUrl() != "") {
                 Picasso.with(getApplicationContext())
                         .load(product.getUrl())
+                        .placeholder(R.drawable.progress_animation)
+                        .error(R.drawable.image_not_load)
                         .into(productUrl);
             }
 

@@ -13,6 +13,7 @@
     tools:showIn="@layout/app_bar_main">
 
 
+
     <Button
         android:gravity="top|center_horizontal"
         android:layout_width="110dp"
@@ -23,27 +24,28 @@
         android:layout_marginLeft="30dp"
         android:layout_marginStart="30dp"
         android:layout_marginTop="100dp"
-        android:background="@mipmap/ic_diet"
-        android:onClick="showDiet"
-        android:id="@+id/button_diet" />
+        android:background="@mipmap/ic_my_diet"
+        android:id="@+id/button_info"
+        android:onClick="showMyDiary"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/menu_diet"
-        android:gravity="center_horizontal"
-        android:layout_below="@id/button_diet"
-        android:layout_alignStart="@id/button_diet"
-        android:layout_alignLeft="@id/button_diet"
+        android:text="@string/menu_my_diary"
+        android:gravity="top|center_horizontal"
+        android:layout_below="@id/button_info"
+        android:layout_alignStart="@id/button_info"
+        android:layout_alignLeft="@id/button_info"
         android:width="110dp"
-        android:textSize="18sp"
-        android:textStyle="bold"/>
+        android:textStyle="bold"
+        android:textSize="18sp"/>
+
 
     <Button
         android:layout_width="110dp"
         android:layout_height="100dp"
-        android:layout_below="@+id/button_diet"
-        android:layout_alignLeft="@+id/button_diet"
-        android:layout_alignStart="@+id/button_diet"
+        android:layout_below="@+id/button_info"
+        android:layout_alignLeft="@+id/button_info"
+        android:layout_alignStart="@+id/button_info"
         android:layout_marginTop="70dp"
         android:background="@mipmap/ic_product"
         android:onClick="showProduct"
@@ -61,28 +63,6 @@
         android:textSize="18sp"/>
 
 
-    <Button
-        android:layout_width="110dp"
-        android:layout_height="100dp"
-        android:layout_below="@+id/button_calc"
-        android:layout_alignLeft="@+id/button_calc"
-        android:layout_alignStart="@+id/button_calc"
-        android:layout_marginTop="70dp"
-        android:layout_toRightOf="@id/button_product"
-        android:background="@mipmap/ic_my_diet"
-        android:id="@+id/button_info"
-        android:onClick="showMyDiary"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/menu_my_diary"
-        android:gravity="top|center_horizontal"
-        android:layout_below="@id/button_info"
-        android:layout_alignStart="@id/button_info"
-        android:layout_alignLeft="@id/button_info"
-        android:width="110dp"
-        android:textStyle="bold"
-        android:textSize="18sp"/>
 
     <Button
         android:gravity="top|center_horizontal"
@@ -91,8 +71,8 @@
         android:background="@mipmap/ic_calc"
         android:onClick="showCalc"
         android:id="@+id/button_calc"
-        android:layout_alignRight="@+id/button_diet"
-        android:layout_alignBottom="@+id/button_diet"
+        android:layout_alignRight="@+id/button_info"
+        android:layout_alignBottom="@+id/button_info"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_marginRight="47dp"
@@ -109,5 +89,26 @@
         android:width="110dp"
         android:textStyle="bold"
         android:textSize="18sp"/>
+    <Button
+        android:layout_width="110dp"
+        android:layout_height="100dp"
+        android:layout_below="@+id/button_calc"
+        android:layout_alignLeft="@+id/button_calc"
+        android:layout_alignStart="@+id/button_calc"
+        android:layout_marginTop="70dp"
+        android:background="@mipmap/ic_diet"
+        android:onClick="showDiet"
+        android:id="@+id/button_diet" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/menu_diet"
+        android:gravity="center_horizontal"
+        android:layout_below="@id/button_diet"
+        android:layout_alignStart="@id/button_diet"
+        android:layout_alignLeft="@id/button_diet"
+        android:width="110dp"
+        android:textSize="18sp"
+        android:textStyle="bold"/>
 
 </RelativeLayout>

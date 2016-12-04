@@ -46,16 +46,7 @@ public class MyDiaryActivity extends AppCompatActivity {
         Date today = new Date();
         SimpleDateFormat df = new SimpleDateFormat("dd.MM");
         df.setTimeZone(TimeZone.getTimeZone("Europe/Moscow"));
-
-        Date beginDay = Diet.getCurrentDietDate(getApplicationContext());
-        if (beginDay == null ){
-            Toast.makeText(getApplicationContext(),"Вы не выбрали диету.",Toast.LENGTH_LONG).show();
-            return;
-        }
-        long diff = today.getTime() - beginDay.getTime();
-        long day = diff / (24 * 60 * 60 * 1000);
-        long hours = diff / ( 60 * 60 * 1000);
-        day++;
+        long day = Diet.getCurrentDietDay(getApplicationContext());
 
 /*
         Toast.makeText(getApplicationContext() , "Начало диеты "+ df.format(beginDay.getTime()) ,Toast.LENGTH_SHORT).show();

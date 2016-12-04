@@ -197,6 +197,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/editTastePreferences"
         android:layout_centerHorizontal="true"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/colorWhite"
         android:text="@string/btnSave"
         android:onClick="onClickSave"/>
 

@@ -140,6 +140,59 @@ public class Nutrition {
         }
     }
 
+
+    /**
+    * Получает информацию о приеме пищи в текущий день, по выбранной диете
+    * id диеты получать из Diet.getCurrentDietId(); < //static
+    * @param long nutrition_id
+    *           номер приема пищи
+    * @param Context context
+    *           Контекст
+    *
+     * **/
+
+    public static Nutrition getNutritionById(long nutrition_id, Context context) {
+        if (nutrition_id < 1){
+            return null;
+        }
+        Integer idDiet = Diet.getCurrentDietId(context);
+        Nutrition nutrition = new Nutrition();
+        DietDB dbHelper = new DietDB(context);
+        dbHelper.create_db();
+        dbHelper.open();
+        if (dbHelper.database == null){
+            Toast.makeText(context,"Нет подключения к БД",Toast.LENGTH_SHORT).show();
+            return null;
+        }
+        Cursor c = dbHelper.database.rawQuery("select "
+                        + Nutrition.TABLE_MENU_NAME + ".id as id ,"
+                        + Nutrition.TABLE_MENU_NAME + ".day as day ,"
+                        + Nutrition.TABLE_INGESTION_NAME + ".name as ingestion_name "
+                        + " from "
+                        + Nutrition.TABLE_MENU_NAME
+                        + " inner join " + Nutrition.TABLE_INGESTION_NAME
+                        + " on " + Nutrition.TABLE_MENU_NAME + ".id_ingestion = " + Nutrition.TABLE_INGESTION_NAME + ".id "
+                        + " inner join " + Nutrition.TABLE_NUTRITION_NAME
+                        + " on " + Nutrition.TABLE_MENU_NAME + ".id = " + Nutrition.TABLE_NUTRITION_NAME + ".id_menu "
+                        + " where " + Nutrition.TABLE_MENU_NAME + ".id_diet = " + idDiet
+                        + " and " + Nutrition.TABLE_NUTRITION_NAME + ".id = " + nutrition_id
+                ,null);
+
+        if (c.moveToFirst()) {
+            int idColIndex = c.getColumnIndex("id");
+            int nameColIndex = c.getColumnIndex("ingestion_name");
+            int dayColIndex = c.getColumnIndex("day");
+            nutrition.setId(Integer.valueOf(c.getString(idColIndex)));
+            nutrition.setName(c.getString(nameColIndex));
+            nutrition.setDay(Integer.valueOf(c.getString(dayColIndex)));
+            List<Product> products = new ArrayList<>();
+            nutrition.setProducts(products);
+
+        }
+        c.close();
+        dbHelper.close();
+        return nutrition;
+    }
     /**
     * Получает информацию о приеме пищи в текущий день, по выбранной диете
     * id диеты получать из Diet.getCurrentDietId(); < //static
@@ -235,4 +288,5 @@ public class Nutrition {
         dbHelper.close();
         return nutritions;
     }
+
 }

@@ -100,9 +100,19 @@ public class MyDataActivity extends AppCompatActivity {
         }
         String myName = editName.getText().toString();
         String myTastePreferences = editTastePreferences.getText().toString();
-        Integer myAge = Integer.valueOf(editAge.getText().toString());
-        Float myWeight = Float.valueOf(editWeight.getText().toString());
-        Float myHeight = Float.valueOf(editHeight.getText().toString());
+
+        Integer myAge = 0;
+        if (!editAge.getText().toString().isEmpty()){
+            myAge = Integer.valueOf(editAge.getText().toString());
+        }
+        Float myWeight = 0f;
+        if(!editWeight.getText().toString().isEmpty()) {
+            myWeight = Float.valueOf(editWeight.getText().toString());
+        }
+        Float myHeight = 0f;
+        if (!editWeight.getText().toString().isEmpty()){
+           myHeight = Float.valueOf(editHeight.getText().toString());
+        }
 
         if (!myName.isEmpty()) {
             user.setName(myName);

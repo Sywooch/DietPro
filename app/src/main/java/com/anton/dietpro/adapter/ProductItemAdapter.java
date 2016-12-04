@@ -62,6 +62,8 @@ public class ProductItemAdapter extends BaseAdapter {
             if (product.getUrl().trim().length() > 0) {
                 Picasso.with(parent.getContext())
                         .load(product.getUrl())
+                        .placeholder(R.drawable.progress_animation)
+                        .error(R.drawable.image_not_load)
                         .into(productImg);
 
             }

@@ -1,6 +1,10 @@
 package com.anton.dietpro.adapter;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +18,7 @@ import android.widget.ToggleButton;
 
 import com.anton.dietpro.R;
 import com.anton.dietpro.models.Diary;
+import com.anton.dietpro.models.Diet;
 import com.anton.dietpro.models.Nutrition;
 import com.anton.dietpro.models.Product;
 
@@ -48,13 +53,14 @@ public class NutritionAdapter extends BaseAdapter {
         return list.get(position).getId();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     public View getView(int position, final View convertView, ViewGroup parent) {
         View view = convertView;
         if (view == null){
             view = layoutInflater.inflate(R.layout.nutrition_layout,parent,false);
         }
-        Nutrition nutrition = getNutrition(position);
+        final Nutrition nutrition = getNutrition(position);
         ArrayList<Product> prods = Nutrition.getNutritionProducts(nutrition.getDay(),position + 1,parent.getContext());
         if (prods == null){
             prods = new ArrayList<>();
@@ -62,14 +68,11 @@ public class NutritionAdapter extends BaseAdapter {
         }
         nutrition.setProducts(prods);
 
-        Button ingestionComplete = (Button) view.findViewById(R.id.ingestionCompelete);
-        ingestionComplete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Diary.printDiary(view.getContext());
-            }
-        });
+        final ToggleButton ingestionComplete = (ToggleButton) view.findViewById(R.id.ingestionCompelete);
 
+        if(Diary.isCompleteMenu(view.getContext(), getItemId(position))) {
+            ingestionComplete.setBackgroundColor(view.getResources().getColor(R.color.colorGreen));
+        }
         TextView ingestionName = (TextView) view.findViewById(R.id.ingestionName);
         ingestionName.setText(nutrition.getName());
 
@@ -90,6 +93,19 @@ public class NutritionAdapter extends BaseAdapter {
                         Toast.makeText(view.getContext(), "Ошибка. Попробуйте снова.", Toast.LENGTH_LONG).show();
                         productComplete.performClick();
                     }
+                    else{
+                        Nutrition n = Nutrition.getNutritionById(nutrition_id,view.getContext());
+                        if(Diary.isCompleteMenu(view.getContext(), n.getId())) {
+                            Log.d("INGESTION2","sET COMPLETE");
+                            View parentView = (View) view.getParent();
+                            parentView = (View) parentView.getParent();
+                            parentView = (View) parentView.getParent();
+                            ToggleButton ingestionComplete = (ToggleButton) parentView.findViewById(R.id.ingestionCompelete);
+                            ingestionComplete.setBackgroundColor(parentView.getResources().getColor(R.color.colorGreen));
+                        }
+                        Log.d("INGESTION2","DONT SET COMPLETE");
+                    }
+
                 }
                 else{
                     if (!Diary.removeNutrition(view.getContext(), nutrition_id)){
@@ -97,12 +113,66 @@ public class NutritionAdapter extends BaseAdapter {
                         productComplete.performClick();
                     }
                     else{
+
+                        View parentView = (View) view.getParent();
+                        parentView = (View) parentView.getParent();
+                        parentView = (View) parentView.getParent();
+                        ToggleButton ingestionComplete = (ToggleButton) parentView.findViewById(R.id.ingestionCompelete);
+                        ingestionComplete.setBackgroundColor(parentView.getResources().getColor(R.color.colorPrimary));
                         Toast.makeText(view.getContext(), "Отменено.", Toast.LENGTH_LONG).show();
                     }
                 }
             }
         });
+        ingestionComplete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                View viewParent = (View) view.getParent();
+                ListView productList = (ListView) viewParent.findViewById(R.id.listProductNutrition);
+                TextView test = (TextView) viewParent.findViewById(R.id.ingestionName);
+                if (productList != null) {
+                    int firstPos = productList.getFirstVisiblePosition();
+                    int lastPos = productList.getHeaderViewsCount();
+                    int count = productList.getChildCount();
+                    // заполнение/отмена всех приемов пищи
+                    if (ingestionComplete.isChecked()) {
 
+                        ingestionComplete.setBackgroundColor(view.getResources().getColor(R.color.colorGreen));
+                        for(int i = 0; i<count; i++) {
+                            View itemView = productList.getChildAt(i);
+                            ToggleButton productComplete = (ToggleButton) itemView.findViewById(R.id.productComplete);
+                            long nutrition_id = productList.getAdapter().getItemId(i);
+                            if (!Diary.insertProductComplete(viewParent.getContext(), nutrition_id)) { // сохраняем в БД отчет о употребленном продукте(id - nutrition_id)
+                                Toast.makeText(view.getContext(), "Ошибка. Попробуйте снова.", Toast.LENGTH_LONG).show();
+                            }
+                            else {
+                                productComplete.performClick();
+                            }
+
+                        }
+                    }
+                    else{
+                        ingestionComplete.setBackgroundColor(view.getResources().getColor(R.color.colorPrimary));
+                        for(int i = 0; i<count; i++) {
+                            View itemView = productList.getChildAt(i);
+                            ToggleButton productComplete = (ToggleButton) itemView.findViewById(R.id.productComplete);
+                            long nutrition_id = productList.getAdapter().getItemId(i); //getView(i,null,null);
+                            if (!Diary.removeNutrition(viewParent.getContext(), nutrition_id)) {
+                                Toast.makeText(viewParent.getContext(), "Ошибка удаления. Попробуйте снова.", Toast.LENGTH_LONG).show();
+                            } else {
+                                productComplete.performClick();
+                                Toast.makeText(viewParent.getContext(), "Отменено.", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    }
+                }
+                else{
+                    Toast.makeText(viewParent.getContext(), "Список продуктов не найден.", Toast.LENGTH_SHORT).show();
+                }
+
+                Diary.printDiary(view.getContext());
+            }
+        });
         return view;
     }
 
