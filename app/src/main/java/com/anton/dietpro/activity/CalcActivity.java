@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +33,31 @@ public class CalcActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        TabHost tabHost = (TabHost) findViewById(R.id.tabHost);
+        tabHost.setup();
+        TabHost.TabSpec tabSpec;
+        tabSpec = tabHost.newTabSpec("tag1");
+        tabSpec.setIndicator("Вкладка 1");
+        tabSpec.setContent(R.id.tab1);
+        tabHost.addTab(tabSpec);
+        tabSpec = tabHost.newTabSpec("tag2");
+        tabSpec.setIndicator("Вкладка 2");
+        tabSpec.setContent(R.id.tab2);
+        tabHost.addTab(tabSpec);
+        tabSpec = tabHost.newTabSpec("tag3");
+        tabSpec.setIndicator("Вкладка 3");
+        tabSpec.setContent(R.id.tab3);
+        tabHost.addTab(tabSpec);
+        tabHost.setCurrentTabByTag("tag1");
+
+        // обработчик переключения вкладок
+        tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+            public void onTabChanged(String tabId) {
+                Toast.makeText(getApplicationContext(), "tabId = " + tabId, Toast.LENGTH_SHORT).show();
+            }
+        });
+
         editAge = ((EditText)findViewById(R.id.editText6));
         editWeight = ((EditText)findViewById(R.id.editText5));
         editHeight = ((EditText)findViewById(R.id.editText11));

@@ -97,11 +97,7 @@ public class NutritionAdapter extends BaseAdapter {
                         Nutrition n = Nutrition.getNutritionById(nutrition_id,view.getContext());
                         if(Diary.isCompleteMenu(view.getContext(), n.getId())) {
                             Log.d("INGESTION2","sET COMPLETE");
-                            View parentView = (View) view.getParent();
-                            parentView = (View) parentView.getParent();
-                            parentView = (View) parentView.getParent();
-                            ToggleButton ingestionComplete = (ToggleButton) parentView.findViewById(R.id.ingestionCompelete);
-                            ingestionComplete.setBackgroundColor(parentView.getResources().getColor(R.color.colorGreen));
+                            ingestionComplete.setBackgroundColor(view.getResources().getColor(R.color.colorGreen));
                         }
                         Log.d("INGESTION2","DONT SET COMPLETE");
                     }
@@ -113,12 +109,7 @@ public class NutritionAdapter extends BaseAdapter {
                         productComplete.performClick();
                     }
                     else{
-
-                        View parentView = (View) view.getParent();
-                        parentView = (View) parentView.getParent();
-                        parentView = (View) parentView.getParent();
-                        ToggleButton ingestionComplete = (ToggleButton) parentView.findViewById(R.id.ingestionCompelete);
-                        ingestionComplete.setBackgroundColor(parentView.getResources().getColor(R.color.colorPrimary));
+                        ingestionComplete.setBackgroundColor(view.getResources().getColor(R.color.colorPrimary));
                         Toast.makeText(view.getContext(), "Отменено.", Toast.LENGTH_LONG).show();
                     }
                 }

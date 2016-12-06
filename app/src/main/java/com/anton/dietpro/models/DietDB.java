@@ -97,4 +97,10 @@ public class DietDB extends SQLiteOpenHelper {
         super.close();
     }
 
+    public static DietDB openDB(Context context) {
+        DietDB dbHelper = new DietDB(context);
+        dbHelper.create_db();
+        dbHelper.open();
+        return dbHelper;
+    }
 }

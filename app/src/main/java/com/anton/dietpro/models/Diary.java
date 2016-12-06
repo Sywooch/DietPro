@@ -17,7 +17,7 @@ import java.util.TimeZone;
  */
 
 public class Diary {
-    private static final String TABLE_DIARY_NAME = "diary";
+    public static final String TABLE_DIARY_NAME = "diary";
 
     private long id;
     private long idNutrition;
@@ -195,20 +195,20 @@ public class Diary {
             Toast.makeText(context,"Нет подключения к БД",Toast.LENGTH_SHORT).show();
             return false;
         }
-        Log.d("INGESTION2","select count_plan as plan" +
-                ", count_fakt as fakt from (select count(*) as count_plan from nutrition where nutrition.id_menu = " + itemId + " ) as plan_table" +
+        String query = "select count_plan as plan" +
+                ", count_fakt as fakt " +
+                " from (select count(*) as count_plan from nutrition where nutrition.id_menu = " + itemId + " ) as plan_table" +
                 ", (select count(*) as count_fakt from nutrition inner join diary on nutrition.id = diary.id_nutrition" +
                 " where nutrition.id_menu = " + itemId + " ) as fakt_table " +
-                " limit 1");
-        Cursor c = dbHelper.database.rawQuery("select count_plan as plan" +
-                ", count_fakt as fakt from (select count(*) as count_plan from nutrition where nutrition.id_menu = " + itemId + " ) as plan_table" +
-                ", (select count(*) as count_fakt from nutrition inner join diary on nutrition.id = diary.id_nutrition" +
-                " where nutrition.id_menu = " + itemId + " ) as fakt_table " +
-                " limit 1",null);
+                " limit 1";
+        Log.d("INGESTION2",query);
+        Cursor c = dbHelper.database.rawQuery(query,null);
         if (c.moveToFirst()) {
             int planColIndex = c.getColumnIndex("plan");
             int faktColIndex = c.getColumnIndex("fakt");
             if (c.getInt(planColIndex) == c.getInt(faktColIndex)){
+                c.close();
+                dbHelper.close();
                 return true;
             }
         }

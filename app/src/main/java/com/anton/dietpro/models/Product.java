@@ -183,8 +183,43 @@ public class Product {
     }
 
 
+    public static ArrayList<Product> getSearchProductList(Context context, String query) {
+        ArrayList<Product> products = new ArrayList<>();
+        DietDB dbHelper = new DietDB(context);
+        dbHelper.create_db();
+        dbHelper.open();
+        if (dbHelper.database == null){
+            Toast.makeText(context,"Нет подключения к БД",Toast.LENGTH_SHORT).show();
+            return null;
+        }
+        //Cursor c = dbHelper.database.rawQuery("select * from " + DietDB.TABLE_PRODUCT,null);
+        Cursor c = dbHelper.database.query(true,DietDB.TABLE_PRODUCT,new String[]{"id","name","protein","fat","carbohydrate","img"}
+                ,"name like '%" + query + "%'",null,null,null,null,"10");
+        if (c.moveToFirst()) {
+            int idColIndex = c.getColumnIndex("id");
+            int nameColIndex = c.getColumnIndex("name");
+            int proteinColIndex = c.getColumnIndex("protein");
+            int fatColIndex = c.getColumnIndex("fat");
+            int carbohydrateColIndex = c.getColumnIndex("carbohydrate");
+            int urlColIndex = c.getColumnIndex("img");
 
-
+            do {
+                Product product = new Product();
+                product.setId(Integer.valueOf(c.getString(idColIndex)));
+                product.setName(c.getString(nameColIndex));
+                product.setPfc(new PFC(c.getDouble(proteinColIndex), c.getDouble(fatColIndex)
+                        , c.getDouble(carbohydrateColIndex)));
+                product.setUrl(c.getString(urlColIndex));
+                products.add(product);
+            } while (c.moveToNext());
+        } else {
+            Product emptyProduct = new Product("Продукты не найдены");
+            products.add(emptyProduct);
+        }
+        c.close();
+        dbHelper.close();
+        return products;
+    }
 }
 
 

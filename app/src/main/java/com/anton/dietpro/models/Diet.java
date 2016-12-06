@@ -1,8 +1,11 @@
 package com.anton.dietpro.models;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 import android.widget.Toast;
 import org.w3c.dom.Text;
 
@@ -10,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 /**
@@ -174,5 +178,52 @@ public class Diet {
         long hours = diff / ( 60 * 60 * 1000);
         day++;
         return day;
+    }
+
+    public static void clearInfoDiet(Context applicationContext /* , long dietId */) {
+        DietDB dbHelper = DietDB.openDB(applicationContext);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.beginTransaction();
+        int count = db.delete(Diary.TABLE_DIARY_NAME,null,null); //TODO добавить удаление только выбранной диеты(хотя и так сойдет)
+        db.setTransactionSuccessful();
+        db.endTransaction();
+        dbHelper.close();
+    }
+
+    public static ArrayList<Diet> getSearchDietList(Context context, String query) {
+
+        ArrayList<Diet> diets = new ArrayList<Diet>();
+        DietDB dbHelper = new DietDB(context);
+        dbHelper.create_db();
+        dbHelper.open();
+        if (dbHelper.database == null){
+            Toast.makeText(context,"Нет подключения к БД",Toast.LENGTH_SHORT).show();
+            return null;
+        }
+        Cursor c = dbHelper.database.query(true,Diet.TABLE_NAME,new String[]{"id","name","description","length"}
+                ,"name like '%" + query + "%'",null,null,null,null,"10");
+
+        if (c.moveToFirst()) {
+            int idColIndex = c.getColumnIndex("id");
+            int nameColIndex = c.getColumnIndex("name");
+            int descriptionColIndex = c.getColumnIndex("description");
+            int lengthColIndex = c.getColumnIndex("length");
+
+            do {
+                Diet diet = new Diet(
+                        Integer.valueOf(c.getString(idColIndex))
+                        ,c.getString(nameColIndex)
+                        ,Integer.valueOf(c.getString(lengthColIndex))
+                        ,c.getString(descriptionColIndex)
+                );
+                diets.add(diet);
+            } while (c.moveToNext());
+        } else {
+            Diet emptyDiet = new Diet("Диеты не найдены",0,null);
+            diets.add(emptyDiet);
+        }
+        c.close();
+        dbHelper.close();
+        return diets;
     }
 }

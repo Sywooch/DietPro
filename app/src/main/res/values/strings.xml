@@ -45,5 +45,8 @@
     <string name="productComplete">Скушано</string>
     <string name="amountKkal">%d ккал</string>
     <string name="templatePFC">%.2f гр.</string>
+    <string name="edit">Редактировать</string>
+    <string name="remove">Удалить</string>
+    <string name="sort_ab">Сортировка</string>
 
 </resources>

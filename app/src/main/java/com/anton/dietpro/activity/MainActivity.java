@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 //import android.support.design.widget.FloatingActionButton;
 import android.support.annotation.NonNull;
+import android.support.v4.view.MenuItemCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -61,11 +62,13 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        //MenuItemCompat.setOnActionExpandListener(searchMenuItem, this);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
     }
 
     @Override
@@ -87,7 +90,20 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        return (id == R.id.action_settings) || super.onOptionsItemSelected(item);
+        if (id == R.id.action_search){
+            MenuItemCompat.setOnActionExpandListener(item, new MenuItemCompat.OnActionExpandListener() {
+                @Override
+                public boolean onMenuItemActionExpand(MenuItem item) {
+                    return false;
+                }
+
+                @Override
+                public boolean onMenuItemActionCollapse(MenuItem item) {
+                    return false;
+                }
+            });
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
