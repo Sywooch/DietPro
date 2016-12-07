@@ -37,17 +37,24 @@ public class MyDiaryActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+        Date today = new Date();
+        SimpleDateFormat df = new SimpleDateFormat("dd.MM");
+        df.setTimeZone(TimeZone.getTimeZone("Europe/Moscow"));
+        long day = Diet.getCurrentDietDay(getApplicationContext());
+        if ((day<1) && (Diet.getCurrentDietId(getApplicationContext())<1) ){
+            Intent backIntent = new Intent(getApplicationContext(),MainActivity.class);
+            startActivity(backIntent);
+        }
+
+
         setContentView(R.layout.activity_my_diary);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-        Date today = new Date();
-        SimpleDateFormat df = new SimpleDateFormat("dd.MM");
-        df.setTimeZone(TimeZone.getTimeZone("Europe/Moscow"));
-        long day = Diet.getCurrentDietDay(getApplicationContext());
-
 /*
         Toast.makeText(getApplicationContext() , "Начало диеты "+ df.format(beginDay.getTime()) ,Toast.LENGTH_SHORT).show();
         Toast.makeText(getApplicationContext() , "ID диеты "+ Diet.getCurrentDietId(getApplicationContext()) ,Toast.LENGTH_SHORT).show();

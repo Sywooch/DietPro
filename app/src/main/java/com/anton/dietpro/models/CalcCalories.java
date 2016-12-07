@@ -1,6 +1,13 @@
 package com.anton.dietpro.models;
 
+import android.util.Log;
+
 import com.anton.dietpro.models.Calc;
+
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+
+import static java.lang.Math.round;
 
 /**
  * Created by Anton Vasilev on 03.11.16.
@@ -53,7 +60,7 @@ public class CalcCalories extends Calc {
         int age = this.getAge();
         double weight = this.getWeight();
         double height = this.getHeight();
-        return 10 * weight + 6.25 * height - 5 * age + 5;
+        return this.roundTwoDecimals(10 * weight + 6.25 * height - 5 * age + 5);
     }
 
     /**
@@ -74,7 +81,85 @@ public class CalcCalories extends Calc {
         int age = this.getAge();
         double weight = this.getWeight();
         double height = this.getHeight();
-        return 10 * weight + 6.25 * height - 5 * age + 5;
+        return this.roundTwoDecimals(10 * weight + 6.25 * height - 5 * age + 5);
     }
 
+    public double calcIMT(){
+        double x = this.getWeight() / (Math.pow(this.getHeight()/100 , 2));
+        Log.d("test_double", "x=" + x);
+        x = this.roundTwoDecimals(x);
+        return x;
+    }
+
+    public double calcMass(){
+        return this.roundTwoDecimals(this.getWeight()*50);
+    }
+
+    public int calcIMTRes() {
+        int res = 0; // 0 -ниже нормы, 1- соответствует, 2 - превышает
+        int x = this.getAge();
+        double cal = this.calcIMT();
+        if (x<=24){
+            if((cal>= 19) && (cal<=24)) {
+                res = 1;
+            }
+            else if(cal>24){
+                res = 2;
+            }
+        }
+        else if(x<=34){
+            if((cal>= 20) && (cal<=25)) {
+                res = 1;
+            }
+            else if(cal>25){
+                res = 2;
+            }
+        }
+        else if(x<=44){
+
+            if((cal>= 21) && (cal<=26)) {
+                res = 1;
+            }
+            else if(cal>26){
+                res = 2;
+            }
+        }
+        else if(x<=54){
+
+            if((cal>= 22) && (cal<=27)) {
+                res = 1;
+            }
+            else if(cal>27){
+                res = 2;
+            }
+        }
+        else if(x<=64){
+
+            if((cal>= 23) && (cal<=28)) {
+                res = 1;
+            }
+            else if(cal>28){
+                res = 2;
+            }
+        }
+        else if(x>64){
+
+            if((cal>= 24) && (cal<=29)) {
+                res = 1;
+            }
+            else if(cal>29){
+                res = 2;
+            }
+        }
+        return res;
+    }
+
+    private double roundTwoDecimals(double d)
+    {
+        DecimalFormat twoDForm = new DecimalFormat("#.##");
+        DecimalFormatSymbols dfs = new DecimalFormatSymbols();
+        dfs.setDecimalSeparator('.');
+        twoDForm.setDecimalFormatSymbols(dfs);
+        return Double.valueOf(twoDForm.format(d));
+    }
 }
