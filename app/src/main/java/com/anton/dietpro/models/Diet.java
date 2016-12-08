@@ -5,16 +5,22 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.util.Log;
 import android.widget.Toast;
 import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.StringJoiner;
 import java.util.TimeZone;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Created by admin on 02.11.16.
@@ -26,6 +32,7 @@ public class Diet {
     private int id;
     private String name;
     private int length;
+    private double effect;
     private String description;
     public Diet(int id, String name, int length, String description) {
         this.id = id;
@@ -66,6 +73,13 @@ public class Diet {
         this.length = length;
     }
 
+    public double getEffect() {
+        return effect;
+    }
+
+    public void setEffect(double effect) {
+        this.effect = effect;
+    }
 
     public String getDescription() {
         return description;
@@ -92,6 +106,7 @@ public class Diet {
             int nameColIndex = c.getColumnIndex("name");
             int descriptionColIndex = c.getColumnIndex("description");
             int lengthColIndex = c.getColumnIndex("length");
+            int effectColIndex = c.getColumnIndex("efficitnce");
 
             do {
                 Diet diet = new Diet(
@@ -100,6 +115,7 @@ public class Diet {
                         ,Integer.valueOf(c.getString(lengthColIndex))
                         ,c.getString(descriptionColIndex)
                 );
+                diet.setEffect(c.getDouble(effectColIndex));
                 diets.add(diet);
             } while (c.moveToNext());
         } else {
@@ -127,12 +143,14 @@ public class Diet {
             int nameColIndex = c.getColumnIndex("name");
             int descriptionColIndex = c.getColumnIndex("description");
             int lengthColIndex = c.getColumnIndex("length");
+            int effectColIndex = c.getColumnIndex("efficitnce");
             diet = new Diet(
                     Integer.valueOf(c.getString(idColIndex))
                     ,c.getString(nameColIndex)
                     ,Integer.valueOf(c.getString(lengthColIndex))
                     ,c.getString(descriptionColIndex)
             );
+            diet.setEffect(c.getDouble(effectColIndex));
         } else {
             diet = new Diet("Диеты не найдены",0,null);
         }
@@ -201,13 +219,14 @@ public class Diet {
             return null;
         }
         Cursor c = dbHelper.database.query(true,Diet.TABLE_NAME,new String[]{"id","name","description","length"}
-                ,"name like '%" + query + "%'",null,null,null,null,"10");
+                ,"name like ?",new String[]{"%"+query+"%"},null,null,null,"10");
 
         if (c.moveToFirst()) {
             int idColIndex = c.getColumnIndex("id");
             int nameColIndex = c.getColumnIndex("name");
             int descriptionColIndex = c.getColumnIndex("description");
             int lengthColIndex = c.getColumnIndex("length");
+            int effectColIndex = c.getColumnIndex("efficitnce");
 
             do {
                 Diet diet = new Diet(
@@ -216,6 +235,7 @@ public class Diet {
                         ,Integer.valueOf(c.getString(lengthColIndex))
                         ,c.getString(descriptionColIndex)
                 );
+                diet.setEffect(c.getDouble(effectColIndex));
                 diets.add(diet);
             } while (c.moveToNext());
         } else {
@@ -225,5 +245,69 @@ public class Diet {
         c.close();
         dbHelper.close();
         return diets;
+    }
+
+
+    /*
+    * Метод производит поиск по базе данных с учетом вкусовых предпочтений пользователя
+    * @return номер самой подходящей по вкусам диеты
+     */
+    public static long generateDiet(Context context) {
+        UserData user = UserData.readPref(context);
+
+        long idDiet = 0;
+        String nameDiet = "";
+        String taste = user.getTastePreferences();
+        Log.d("generateDiet","taste = " + taste);
+        String[] arrTaste = taste.split("(\\s|\n|,|\\.)");
+        for (int i=0;i < arrTaste.length ;i++){
+            arrTaste[i] = arrTaste[i].substring(0,1).toUpperCase(new Locale("ru","RU")) +arrTaste[i].substring(1);
+            Log.d("generateDiet","arrTaste["+i+"] = " + arrTaste[i] );// arrTaste[i]);
+        }
+        //ищем совпадения по продуктам в БД(без последних двух симоволов(окончания))
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < arrTaste.length; i++) {
+            arrTaste[i] = arrTaste[i].trim();
+            if (!arrTaste[i].matches(" *") && (arrTaste[i].length()>1)) {//empty string are ""; " "; "  "; and so on
+                if(arrTaste[i].length() > 2) {
+                    arrTaste[i] = arrTaste[i].substring(0, arrTaste[i].length() - 1);
+                }
+                sb.append("or name like '" + arrTaste[i] + "%' ");
+            }
+        }
+        String where = sb.substring(2);
+        String query = SQLiteQueryBuilder.buildQueryString(true,DietDB.TABLE_PRODUCT,new String[]{"id","name","protein","fat","carbohydrate","img"}
+                ,where,null,null,null,null);
+        Log.d("generateDiet","sql = " + query);
+        DietDB db = DietDB.openDB(context);
+        Cursor c = db.getReadableDatabase().query(true,DietDB.TABLE_PRODUCT,new String[]{"id","name","protein","fat","carbohydrate","img"}
+                ,where,null,null,null,null,"10");//db.database.rawQuery(query,null); //db.database.query(true,Product.TABLE_NAME,new String[]{"id","name"},"name regexp ?",new String[]{"'"+sb.toString()+"'"},null,null,null,null);
+        if(c.moveToFirst()) {
+            String productsName="";
+            Log.d("generateDiet","count product = " + c.getCount());
+            do{
+                productsName += "or nutrition.id_product=" + c.getString(0)+" ";
+            }while(c.moveToNext());
+            productsName = productsName.substring(2);
+            Log.d("generateDiet","ids product = " + productsName);
+            //ищем диету с максимальным приемом данных продуктов(в сумме)
+
+            query = " select diet.id,diet.name, count(*) " +
+                    " from diet inner join menu on diet.id = menu.id_diet " +
+                    " inner join nutrition on menu.id = nutrition.id_menu " +
+                    " where " + productsName +
+                    " group by diet.id " +
+                    " order by count(*) desc ";
+            Log.d("generateDiet","rating diets = " + query);
+            c = db.database.rawQuery(query,null);
+            if(c.moveToFirst()){
+                idDiet = c.getInt(0);
+                nameDiet = c.getString(1);
+            }
+        }
+        db.close();
+
+
+        return idDiet;
     }
 }

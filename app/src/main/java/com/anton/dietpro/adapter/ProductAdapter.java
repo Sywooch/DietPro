@@ -53,18 +53,20 @@ public class ProductAdapter extends BaseAdapter {
         TextView textView = (TextView) view.findViewById(R.id.textViewItem);
         textView.setText(product.getName());
         TextView textViewSub = (TextView) view.findViewById(R.id.textViewItemSub);
-        textViewSub.setText("Белки " + product.getPfc().getProtein() + ", Жиры "
-        + product.getPfc().getFat() + ", Углеводы " + product.getPfc().getCarbohydrate());
+        textViewSub.setText(product.getPfc().getCalories() + " ккал.");
+
 
         ImageView productImg = (ImageView) view.findViewById(R.id.productImg);
-        if(product.getUrl() != "" &&  product.getUrl() != null) {
-            if (product.getUrl().trim().length() > 0) {
-                Picasso.with(parent.getContext())
-                        .load(product.getUrl())
-                        .placeholder(R.drawable.progress_animation)
-                        .error(R.drawable.image_not_load)
-                        .into(productImg);
+        if (product.getUrl() != null) {
+            if (!product.getUrl().equals("") && product.getUrl() != null) {
+                if (product.getUrl().trim().length() > 0) {
+                    Picasso.with(parent.getContext())
+                            .load(product.getUrl())
+                            .placeholder(R.drawable.progress_animation)
+                            .error(R.drawable.image_not_load)
+                            .into(productImg);
 
+                }
             }
         }
         return view;

@@ -2,6 +2,7 @@ package com.anton.dietpro.models;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.anton.dietpro.models.PFC;
@@ -174,6 +175,8 @@ public class Product {
                     , c.getDouble(carbohydrateColIndex)));
             product.setUrl(c.getString(urlColIndex))
             ;
+            Log.d("product_info" , "protein = " + c.getDouble(proteinColIndex) + " ,fat = " + c.getDouble(fatColIndex)
+                    +  + c.getDouble(carbohydrateColIndex));
         } else {
             product = new Product("Продукты не найдены");
         }
@@ -194,7 +197,7 @@ public class Product {
         }
         //Cursor c = dbHelper.database.rawQuery("select * from " + DietDB.TABLE_PRODUCT,null);
         Cursor c = dbHelper.database.query(true,DietDB.TABLE_PRODUCT,new String[]{"id","name","protein","fat","carbohydrate","img"}
-                ,"name like '%" + query + "%'",null,null,null,null,"10");
+                ,"name like ?",new String[]{"%"+query+"%"},null,null,null,"10");
         if (c.moveToFirst()) {
             int idColIndex = c.getColumnIndex("id");
             int nameColIndex = c.getColumnIndex("name");

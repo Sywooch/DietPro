@@ -1,9 +1,7 @@
 package com.anton.dietpro.activity;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-//import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -15,12 +13,10 @@ import android.widget.LinearLayout;
 import android.widget.TabHost;
 import android.widget.TabWidget;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.anton.dietpro.R;
 import com.anton.dietpro.models.CalcCalories;
 import com.anton.dietpro.models.UserData;
-import com.google.gson.Gson;
 
 public class CalcActivity extends AppCompatActivity {
 
@@ -40,21 +36,26 @@ public class CalcActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
+        editAge = ((EditText)findViewById(R.id.editText6));
+        editWeight = ((EditText)findViewById(R.id.editText5));
+        editHeight = ((EditText)findViewById(R.id.editText11));
+        textResult = ((TextView)findViewById(R.id.textResult));
+
         tabHost = (TabHost) findViewById(R.id.tabHost);
         tabHost.setup();
 
 
         TabHost.TabSpec tabSpec;
         tabSpec = tabHost.newTabSpec("tag1");
-        tabSpec.setIndicator("Похудение");
+        tabSpec.setIndicator(getString(R.string.labelLoseWeight));
         tabSpec.setContent(R.id.tab1);
         tabHost.addTab(tabSpec);
         tabSpec = tabHost.newTabSpec("tag2");
-        tabSpec.setIndicator("Набор массы");
+        tabSpec.setIndicator(getString(R.string.labelUpWeight));
         tabSpec.setContent(R.id.tab2);
         tabHost.addTab(tabSpec);
         tabSpec = tabHost.newTabSpec("tag3");
-        tabSpec.setIndicator("Индекс массы тела");
+        tabSpec.setIndicator(getString(R.string.labelIMT));
         tabSpec.setContent(R.id.tab3);
         tabHost.addTab(tabSpec);
         tabHost.setCurrentTabByTag("tag1");
@@ -66,18 +67,15 @@ public class CalcActivity extends AppCompatActivity {
             TextView tv = (TextView) tabView.findViewById(android.R.id.title);
             tv.setTextSize(13);
         }
+
         // обработчик переключения вкладок
         tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
 
             public void onTabChanged(String tabId) {
-                ;//Toast.makeText(getApplicationContext(), "tabId = " + tabId, Toast.LENGTH_SHORT).show();
+                textResult.setText("");//Toast.makeText(getApplicationContext(), "tabId = " + tabId, Toast.LENGTH_SHORT).show();
             }
         });
 
-        editAge = ((EditText)findViewById(R.id.editText6));
-        editWeight = ((EditText)findViewById(R.id.editText5));
-        editHeight = ((EditText)findViewById(R.id.editText11));
-        textResult = ((TextView)findViewById(R.id.textResult));
         readPreferences();
     }
 
@@ -97,7 +95,6 @@ public class CalcActivity extends AppCompatActivity {
                     editAge.setText(String.valueOf(user.getAge()));
                 }
                 if (user.getWeight() > 0) {
-
                     editWeight = ((EditText)v.findViewById(R.id.editText5));
                     editWeight.setText(String.valueOf(user.getWeight()));
                 }
@@ -154,33 +151,30 @@ public class CalcActivity extends AppCompatActivity {
         Float y = Float.parseFloat(weight);
         Float z = Float.parseFloat(height);
         CalcCalories calc = new CalcCalories(x,y,z);
-        calc.setAge(x);
-        calc.setWeight(y);
-        calc.setHeight(z);
         double cal = 0;
 
         switch (id){
             case R.id.button:
                 cal = calc.calcMifflin();
-                textResult.setText(String.valueOf("Ваша дневная норма БЖУ: " + cal));
+                textResult.setText(String.format(getString(R.string.PFCnorm),cal)); //String.valueOf("Ваша дневная норма БЖУ: " + Math.round(cal) + " ккал."));
                 break;
             case R.id.button2:
                 cal = calc.calcMass();
-                textResult.setText(String.valueOf("Ваша дневная норма БЖУ: " + cal));
+                textResult.setText(String.format(getString(R.string.PFCnorm),cal));
                 break;
             case R.id.button3:
                 cal = calc.calcIMT();
                 int resIMT = calc.calcIMTRes();
-                String res = "Индекс массы тела = " + cal + ".";
+                String res = String.format(getString(R.string.IMT),cal);
                 switch (resIMT){
                     case 0:
-                        res += " Индекс ниже нормы";
+                        res += " " + getString(R.string.IMTlower);
                         break;
                     case 1:
-                        res += " Индекс в норме";
+                        res += " " + getString(R.string.IMTnorm);
                         break;
                     case 2:
-                        res += " Индекс выше нормы";
+                        res += " " + getString(R.string.IMTupper);
                         break;
                     default:
                         break;

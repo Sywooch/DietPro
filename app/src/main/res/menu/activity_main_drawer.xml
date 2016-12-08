@@ -4,27 +4,27 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_my"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_menu_my_data"
             android:title="@string/menu_my"
             android:onClick="showMyData"/>
         <item
             android:id="@+id/nav_my_diary"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_menu_my_diet"
             android:title="@string/menu_my_diary"
             android:onClick="showMyDiary"/>
         <item
             android:id="@+id/nav_calc"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_menu_calc"
             android:title="@string/menu_calc"
             android:onClick="showCalc"/>
         <item
             android:id="@+id/nav_diet"
-            android:icon="@drawable/ic_menu_gallery"
+            android:icon="@drawable/ic_menu_diet"
             android:title="@string/menu_diet"
             android:onClick="showDiet"/>
         <item
             android:id="@+id/nav_product"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@drawable/ic_menu_product"
             android:title="@string/menu_product" />
         <item
             android:id="@+id/nav_manage"

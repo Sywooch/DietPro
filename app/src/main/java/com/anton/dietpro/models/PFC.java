@@ -1,5 +1,7 @@
 package com.anton.dietpro.models;
 
+import static java.lang.Math.round;
+
 /**
  * Created by Anton Vasilev on 03.11.16.
  */
@@ -67,7 +69,7 @@ public class PFC {
      * @return Количество калорий
      */
     public double getCalories(){
-        return ( this.protein * 4 + this.fat * 10 + this.carbohydrate * 4 );
+        return (double)round(( this.protein * 4 + this.fat * 10 + this.carbohydrate * 4 )*100)/100;
     }
     /**
      * Расчет энергетической ценности в Джоулях

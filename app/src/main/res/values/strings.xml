@@ -48,8 +48,26 @@
     <string name="edit">Редактировать</string>
     <string name="remove">Удалить</string>
     <string name="sort_ab">Сортировка</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="textViewProductSub">%.2f калл.</string>
+    <string name="image_product">Image product</string>
+    <string name="productDescription"><![CDATA[
+    <p><strong>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</strong></p>
+    <br></br>
+    <p>Praesent in mauris pharetra, molestie augue eu, accumsan urna. In quis porttitor metus.
+    Quisque a orci mattis, blandit nisi id, facilisis mi. Fusce ullamcorper leo at magna lacinia rutrum. Nam semper vehicula tristique.
+    Proin et suscipit libero. Maecenas scelerisque gravida tortor.</p>
+    ]]></string>
+    <string name="PFCnorm">Ваша дневная норма калорий: %.0f ккал.</string>
+    <string name="IMT">Индекс массы тела = %.2f.</string>
+    <string name="IMTlower">Индекс ниже нормы.</string>
+    <string name="IMTnorm">Индекс в норме.</string>
+    <string name="IMTupper">Индекс выше нормы.</string>
+    <string name="labelLoseWeight">Похудение</string>
+    <string name="labelUpWeight">Набор массы</string>
+    <string name="labelIMT">Индекс массы тела</string>
+    <string name="author">development by Vasilev A.</string>
+    <string name="generate_diet">Подобрать</string>
+    <string name="infoDiet">"%1$d дней.
+        %2$.1f кг."</string>
 
 </resources>
