@@ -54,25 +54,26 @@ public class ProductDetailsActivity extends AppCompatActivity {
             this.initView(productId);
         }
         else {
-            Toast.makeText(this, "Произошла ошибка. Диета не найдена", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Произошла ошибка. Продукт не найден.", Toast.LENGTH_SHORT).show();
         }
 
     }
 
     private void initView(long id){
         if (id == 0){
-            productName.setText("Диета не найдена");
+            productName.setText("Продукт не найден.");
         }
         else{
             Product product = Product.getProductById(id, getApplicationContext());
             productName.setText(product.getName());
-            productDescription.setText(Html.fromHtml("Описание продукта"/*String.valueOf(product.getDescription())*/));
+            productDescription.setText(Html.fromHtml(getResources().getString(R.string.productDescription))); /*String.valueOf(product.getDescription())*/
             productProtein.setText(String.format(productProtein.getText().toString(), (float)product.getPfc().getProtein()));
-            productFat.setText(String.format(productProtein.getText().toString(), ((float)product.getPfc().getFat())));
-            productCarbohydrate.setText(String.format(productProtein.getText().toString(), (float)product.getPfc().getCarbohydrate()));
-            if( product.getUrl() != "") {
+            productFat.setText(String.format(productFat.getText().toString(), ((float)product.getPfc().getFat())));
+            productCarbohydrate.setText(String.format(productCarbohydrate.getText().toString(), (float)product.getPfc().getCarbohydrate()));
+            if( !product.getUrl().equals("")) {
                 Picasso.with(getApplicationContext())
                         .load(product.getUrl())
+                       // .resize(350,350)
                         .placeholder(R.drawable.progress_animation)
                         .error(R.drawable.image_not_load)
                         .into(productUrl);

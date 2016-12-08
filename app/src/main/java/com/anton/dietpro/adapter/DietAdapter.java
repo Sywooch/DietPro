@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.anton.dietpro.R;
@@ -47,11 +48,13 @@ public class DietAdapter extends BaseAdapter {
             view = layoutInflater.inflate(R.layout.item_layout,parent,false);
         }
         Diet diet = getDiet(position);
+
+        ((ImageView)view.findViewById(R.id.productImg)).setVisibility(View.GONE);
         TextView textView = (TextView) view.findViewById(R.id.textViewItem);
         textView.setText(diet.getName());
         TextView textViewSub = (TextView) view.findViewById(R.id.textViewItemSub);
-        textViewSub.setText("Продолжительность " + diet.getLength() + " дней. " +
-        "Эффективность: " + " -5кг");
+        textViewSub.setText(String.format(view.getResources().getString(R.string.infoDiet),diet.getLength(),diet.getEffect()));
+        // "Продолжительность " +  + " дней. " +"Эффективность: " + " -5кг");
         return view;
     }
 

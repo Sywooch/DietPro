@@ -5,9 +5,9 @@ android {
     }
 
     compileSdkVersion 25
-    //buildToolsVersion "25"
+    buildToolsVersion "25"
 
-    buildToolsVersion "23.0.2"
+    //buildToolsVersion "23.0.2"
 
     defaultConfig {
         applicationId "com.anton.dietpro"
@@ -16,18 +16,6 @@ android {
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
-    }
-    packagingOptions {
-        exclude 'META-INF/DEPENDENCIES.txt'
-        exclude 'META-INF/NOTICE'
-        exclude 'META-INF/NOTICE.txt'
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/LICENSE.txt'
-    }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
     }
     buildTypes {
         release {
