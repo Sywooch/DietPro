@@ -14,14 +14,13 @@
     tools:showIn="@layout/activity_calc">
 
     <TabHost
-        android:layout_width="200dip"
-        android:layout_height="match_parent"
+        android:layout_width="match_parent"
         android:id="@+id/tabHost"
-        android:layout_below="@+id/textView"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true">
+        android:layout_alignParentEnd="true"
+        android:layout_height="350dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -31,7 +30,8 @@
             <TabWidget
                 android:id="@android:id/tabs"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                />
 
             <FrameLayout
                 android:id="@android:id/tabcontent"
@@ -45,66 +45,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" >
 
-                        <TextView
-                            android:text="@string/label_age"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/textView8"
-                            android:layout_alignParentLeft="true"
-                            android:layout_alignParentStart="true" />
-
-                        <EditText
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:inputType="numberSigned"
-                            android:ems="10"
-                            android:layout_below="@+id/textView8"
-                            android:layout_alignParentLeft="true"
-                            android:layout_alignParentStart="true"
-                            android:id="@+id/editText6"
-                            android:layout_marginTop="10dp" />
-
-                        <TextView
-                            android:text="@string/label_weight"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/textView10"
-                            android:layout_below="@+id/editText6"
-                            android:layout_alignParentLeft="true"
-                            android:layout_alignParentStart="true"
-                            android:layout_marginTop="10dp" />
-
-                        <EditText
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:inputType="numberDecimal"
-                            android:ems="10"
-                            android:layout_below="@+id/textView10"
-                            android:layout_alignParentLeft="true"
-                            android:layout_alignParentStart="true"
-                            android:id="@+id/editText5"
-                            android:layout_marginTop="10dp" />
-
-                        <TextView
-                            android:text="@string/label_height"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/textView11"
-                            android:layout_below="@+id/editText5"
-                            android:layout_alignParentLeft="true"
-                            android:layout_alignParentStart="true"
-                            android:layout_marginTop="10dp" />
-
-                        <EditText
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:inputType="numberDecimal"
-                            android:ems="10"
-                            android:layout_below="@+id/textView11"
-                            android:layout_alignParentLeft="true"
-                            android:layout_alignParentStart="true"
-                            android:id="@+id/editText11"
-                            android:layout_marginTop="10dp"/>
+                        <include layout="@layout/fragment_calc_data" android:layout_alignParentTop="true"
+                            android:layout_height="wrap_content" android:layout_width="match_parent" android:id="@+id/includeCalcData" />
                         <Button
                             android:text="@string/btnCalc"
                             android:layout_width="wrap_content"
@@ -114,42 +56,70 @@
                             android:padding="10dp"
                             android:id="@+id/button"
                             android:layout_marginTop="10dp"
-                            android:layout_below="@+id/editText11"
+                            android:layout_below="@+id/includeCalcData"
                             android:layout_alignParentLeft="true"
                             android:layout_alignParentStart="true"
                             android:onClick="actionCalc" />
 
 
-                        <TextView
-                            android:text=""
-                            android:textSize="18sp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/textResult"
-                            android:layout_below="@+id/button"
-                            android:layout_alignParentStart="true"
-                            android:layout_gravity="center"
-                            android:layout_marginTop="30dp"
-                            android:layout_alignParentLeft="true" />
-
                 </RelativeLayout>
 
-                <LinearLayout
+                <RelativeLayout
                     android:id="@+id/tab2"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
+                    android:layout_height="match_parent">
 
-                </LinearLayout>
+                    <include layout="@layout/fragment_calc_data" android:layout_alignParentTop="true"
+                        android:layout_height="wrap_content" android:layout_width="match_parent" android:id="@+id/includeCalcData" />
+                    <Button
+                        android:text="@string/btnCalc"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@color/colorPrimary"
+                        android:textColor="@color/colorWhite"
+                        android:padding="10dp"
+                        android:id="@+id/button2"
+                        android:layout_marginTop="10dp"
+                        android:layout_below="@+id/includeCalcData"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:onClick="actionCalc" />
+                </RelativeLayout>
 
-                <LinearLayout
+                <RelativeLayout
                     android:id="@+id/tab3"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
+                    android:layout_height="match_parent">
 
-                </LinearLayout>
+                    <include layout="@layout/fragment_calc_data" android:layout_alignParentTop="true"
+                        android:layout_height="wrap_content" android:layout_width="match_parent" android:id="@+id/includeCalcData" />
+                    <Button
+                        android:text="@string/btnCalc"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@color/colorPrimary"
+                        android:textColor="@color/colorWhite"
+                        android:padding="10dp"
+                        android:id="@+id/button3"
+                        android:layout_marginTop="10dp"
+                        android:layout_below="@+id/includeCalcData"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:onClick="actionCalc" />
+                </RelativeLayout>
             </FrameLayout>
         </LinearLayout>
     </TabHost>
+
+    <TextView
+        android:text="result"
+        android:textSize="18sp"
+        android:layout_marginTop="30dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textResult"
+        android:layout_gravity="center"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/tabHost"/>
+
 </RelativeLayout>

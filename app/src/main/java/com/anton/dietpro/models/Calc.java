@@ -38,4 +38,5 @@ public abstract class Calc {
     }
     public abstract double calc(); /// < метод с расчетной частью
 
+
 }

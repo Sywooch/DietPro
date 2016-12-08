@@ -10,7 +10,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TabHost;
+import android.widget.TabWidget;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +27,8 @@ public class CalcActivity extends AppCompatActivity {
     private EditText editAge;
     private EditText editWeight;
     private EditText editHeight;
+    private TextView textResult;
+    private TabHost tabHost;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,48 +39,74 @@ public class CalcActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        TabHost tabHost = (TabHost) findViewById(R.id.tabHost);
+
+        tabHost = (TabHost) findViewById(R.id.tabHost);
         tabHost.setup();
+
+
         TabHost.TabSpec tabSpec;
         tabSpec = tabHost.newTabSpec("tag1");
-        tabSpec.setIndicator("Вкладка 1");
+        tabSpec.setIndicator("Похудение");
         tabSpec.setContent(R.id.tab1);
         tabHost.addTab(tabSpec);
         tabSpec = tabHost.newTabSpec("tag2");
-        tabSpec.setIndicator("Вкладка 2");
+        tabSpec.setIndicator("Набор массы");
         tabSpec.setContent(R.id.tab2);
         tabHost.addTab(tabSpec);
         tabSpec = tabHost.newTabSpec("tag3");
-        tabSpec.setIndicator("Вкладка 3");
+        tabSpec.setIndicator("Индекс массы тела");
         tabSpec.setContent(R.id.tab3);
         tabHost.addTab(tabSpec);
         tabHost.setCurrentTabByTag("tag1");
 
+        TabWidget tw = (TabWidget)tabHost.findViewById(android.R.id.tabs);
+        int n = tw.getChildCount();
+        for (int i = 0; i < n; i++) {
+            View tabView = tw.getChildTabViewAt(i);
+            TextView tv = (TextView) tabView.findViewById(android.R.id.title);
+            tv.setTextSize(13);
+        }
         // обработчик переключения вкладок
         tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+
             public void onTabChanged(String tabId) {
-                Toast.makeText(getApplicationContext(), "tabId = " + tabId, Toast.LENGTH_SHORT).show();
+                ;//Toast.makeText(getApplicationContext(), "tabId = " + tabId, Toast.LENGTH_SHORT).show();
             }
         });
 
         editAge = ((EditText)findViewById(R.id.editText6));
         editWeight = ((EditText)findViewById(R.id.editText5));
         editHeight = ((EditText)findViewById(R.id.editText11));
+        textResult = ((TextView)findViewById(R.id.textResult));
         readPreferences();
     }
 
     private void readPreferences() {
+
         UserData user = UserData.readPref(getApplicationContext());
         if (user != null) {
-            if (user.getAge() > 0) {
-                editAge.setText(String.valueOf(user.getAge()));
+            FrameLayout tabContent = (FrameLayout)((LinearLayout)tabHost.getChildAt(0)).getChildAt(1);// (FrameLayout)findViewById(R.id.tabcontent));
+            int n = tabContent.getChildCount();
+            //Toast.makeText(getApplicationContext(),"n="+n,Toast.LENGTH_LONG).show();
+
+
+            for(int i =0;i<n;i++) {
+                View v = tabContent.getChildAt(i);
+                if (user.getAge() > 0) {
+                    editAge = (EditText) v.findViewById(R.id.editText6);
+                    editAge.setText(String.valueOf(user.getAge()));
+                }
+                if (user.getWeight() > 0) {
+
+                    editWeight = ((EditText)v.findViewById(R.id.editText5));
+                    editWeight.setText(String.valueOf(user.getWeight()));
+                }
+                if (user.getHeight() > 0) {
+                    editHeight = ((EditText)v.findViewById(R.id.editText11));
+                    editHeight.setText(String.valueOf(user.getHeight()));
+                }
             }
-            if (user.getWeight() > 0) {
-                editWeight.setText(String.valueOf(user.getWeight()));
-            }
-            if (user.getHeight() > 0) {
-                editHeight.setText(String.valueOf(user.getHeight()));
-            }
+
         }
     }
 
@@ -101,6 +132,11 @@ public class CalcActivity extends AppCompatActivity {
 
     public void actionCalc(View v)
     {
+        int id = v.getId();
+        v = (View)v.getParent();
+        editAge = ((EditText)v.findViewById(R.id.editText6));
+        editWeight = ((EditText)v.findViewById(R.id.editText5));
+        editHeight = ((EditText)v.findViewById(R.id.editText11));
         saveData();
         String age = editAge.getText().toString();
         String weight = editWeight.getText().toString();
@@ -115,15 +151,48 @@ public class CalcActivity extends AppCompatActivity {
             return;
         }
         int x = Integer.parseInt(age);
-        int y = Integer.parseInt(weight);
-        int z = Integer.parseInt(height);
+        Float y = Float.parseFloat(weight);
+        Float z = Float.parseFloat(height);
         CalcCalories calc = new CalcCalories(x,y,z);
         calc.setAge(x);
         calc.setWeight(y);
         calc.setHeight(z);
-        double cal = calc.calcMifflin();
-        TextView textResult = ((TextView)findViewById(R.id.textResult));
-        textResult.setText(String.valueOf("Ваша дневная норма БЖУ: " + cal));
+        double cal = 0;
+
+        switch (id){
+            case R.id.button:
+                cal = calc.calcMifflin();
+                textResult.setText(String.valueOf("Ваша дневная норма БЖУ: " + cal));
+                break;
+            case R.id.button2:
+                cal = calc.calcMass();
+                textResult.setText(String.valueOf("Ваша дневная норма БЖУ: " + cal));
+                break;
+            case R.id.button3:
+                cal = calc.calcIMT();
+                int resIMT = calc.calcIMTRes();
+                String res = "Индекс массы тела = " + cal + ".";
+                switch (resIMT){
+                    case 0:
+                        res += " Индекс ниже нормы";
+                        break;
+                    case 1:
+                        res += " Индекс в норме";
+                        break;
+                    case 2:
+                        res += " Индекс выше нормы";
+                        break;
+                    default:
+                        break;
+                }
+
+                textResult.setText(res);
+                break;
+            default:
+                break;
+        }
+        saveData();
+        readPreferences();
 
     }
 

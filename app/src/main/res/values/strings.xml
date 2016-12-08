@@ -49,4 +49,7 @@
     <string name="remove">Удалить</string>
     <string name="sort_ab">Сортировка</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>
