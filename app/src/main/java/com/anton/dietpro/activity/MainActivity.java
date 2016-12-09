@@ -136,6 +136,11 @@ public class MainActivity extends AppCompatActivity
         Intent intent = new Intent(this,DietActivity.class);
         startActivity(intent);
     }
+
+    public void showProduct(MenuItem item){
+        Intent intent = new Intent(this,ProductActivity.class);
+        startActivity(intent);
+    }
     public void showDiet(View v){
         Intent intent = new Intent(this,DietActivity.class);
         startActivity(intent);

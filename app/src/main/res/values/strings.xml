@@ -17,7 +17,7 @@
     <string name="menu_title_send">Поделиться</string>
     <string name="title_activity_diet">Диеты</string>
     <string name="title_activity_product">Продукты</string>
-    <string name="title_activity_calc_details">CalcDetailsActivity</string>
+    <string name="title_activity_calc_details">Детали диеты</string>
     <string name="acceptDiet">Сесть на диету</string>
     <string name="title_activity_product_details">Описание продукта</string>
     <string name="titlePFC">Пищевая ценность:</string>

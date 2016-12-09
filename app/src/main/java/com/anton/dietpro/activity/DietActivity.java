@@ -4,6 +4,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -23,11 +24,14 @@ import com.anton.dietpro.models.Diet;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
+import android.support.v4.view.MenuItemCompat.OnActionExpandListener;
 
 public class DietActivity extends AppCompatActivity {
 
     private ListView listView;
     private Menu myMenu;
+    private boolean orderBy = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,7 +70,7 @@ public class DietActivity extends AppCompatActivity {
 
     private void doSearch(String query) {
         ArrayList<Diet> diets = Diet.getSearchDietList(getApplicationContext(),query);
-        DietAdapter adapter = new DietAdapter(getApplicationContext(),diets);
+        DietAdapter adapter = new DietAdapter(this,diets);
         listView.setAdapter(adapter);
 
     }
@@ -109,7 +113,7 @@ public class DietActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main, menu);
-
+        final Menu myMenu = menu;
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
@@ -117,10 +121,12 @@ public class DietActivity extends AppCompatActivity {
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
+
                 Intent intent = new Intent(getApplicationContext(), DietActivity.class);
                 startActivity(intent);
                 return false;
             }
+
         });
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -131,26 +137,37 @@ public class DietActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String s) {
                 doSearch(s);
-                return false;
+                return true;
             }
         });
         return true;
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_search){
-            this.myMenu.findItem(R.id.generate_diet).setVisible(false);
+            MenuItemCompat.setOnActionExpandListener(item,new OnActionExpandListener(){
+                @Override
+                public boolean onMenuItemActionCollapse(MenuItem item) {
+                    myMenu.findItem(R.id.generate_diet).setVisible(true);
+                    return true;  // Return true to collapse action view
+                }
+
+                @Override
+                public boolean onMenuItemActionExpand(MenuItem item) {
+                    myMenu.findItem(R.id.generate_diet).setVisible(false);
+                    return true;  // Return true to expand action view
+                }
+            });
             return true;
         }
-        else
-        {
-
-            if (id == R.id.action_search){
-                this.myMenu.findItem(R.id.generate_diet).setVisible(true);
-                return true;
-            }
+        if (id == R.id.action_sort){
+            ArrayList<Diet> diets = Diet.getDietListSorted(getApplicationContext(),orderBy);
+            DietAdapter adapter = new DietAdapter(this,diets);
+            listView.setAdapter(adapter);
+            orderBy = !orderBy;
         }
         if (id == android.R.id.home) {
             Intent intent = new Intent(this,MainActivity.class);

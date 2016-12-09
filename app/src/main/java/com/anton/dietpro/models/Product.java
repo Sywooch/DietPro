@@ -103,6 +103,7 @@ public class Product {
     {
         return (this.weight/100) * pfc.getCalories();
     }
+
     /**
      * Расчет калорийности продукта
      *
@@ -114,90 +115,48 @@ public class Product {
     }
 
     public static ArrayList<Product> getProductList(Context context){
-        ArrayList<Product> products = new ArrayList<>();
-        DietDB dbHelper = new DietDB(context);
-        dbHelper.create_db();
-        dbHelper.open();
-        if (dbHelper.database == null){
-            Toast.makeText(context,"Нет подключения к БД",Toast.LENGTH_SHORT).show();
-            return null;
-        }
-        Cursor c = dbHelper.database.rawQuery("select * from " + DietDB.TABLE_PRODUCT,null);
-        if (c.moveToFirst()) {
-            int idColIndex = c.getColumnIndex("id");
-            int nameColIndex = c.getColumnIndex("name");
-            int proteinColIndex = c.getColumnIndex("protein");
-            int fatColIndex = c.getColumnIndex("fat");
-            int carbohydrateColIndex = c.getColumnIndex("carbohydrate");
-            int urlColIndex = c.getColumnIndex("img");
-
-            do {
-                Product product = new Product();
-                product.setId(Integer.valueOf(c.getString(idColIndex)));
-                product.setName(c.getString(nameColIndex));
-                product.setPfc(new PFC(c.getDouble(proteinColIndex), c.getDouble(fatColIndex)
-                                , c.getDouble(carbohydrateColIndex)));
-                product.setUrl(c.getString(urlColIndex));
-                products.add(product);
-            } while (c.moveToNext());
-        } else {
-            Product emptyProduct = new Product("Продукты не найдены");
-            products.add(emptyProduct);
-        }
-        c.close();
-        dbHelper.close();
-        return products;
+        return getProductList(context,0,null,null);
     }
 
     public static Product getProductById(long id, Context context){
-        Product product;
-        DietDB dbHelper = new DietDB(context);
-        dbHelper.create_db();
-        dbHelper.open();
-        if (dbHelper.database == null){
-            Toast.makeText(context,"Нет подключения к БД",Toast.LENGTH_SHORT).show();
-            return null;
-        }
-        Cursor c = dbHelper.database.rawQuery("select * from " + DietDB.TABLE_PRODUCT
-                + " where id = " + id + " limit 1",null);
-        if (c.moveToFirst()) {
-            int idColIndex = c.getColumnIndex("id");
-            int nameColIndex = c.getColumnIndex("name");
-            int proteinColIndex = c.getColumnIndex("protein");
-            int fatColIndex = c.getColumnIndex("fat");
-            int carbohydrateColIndex = c.getColumnIndex("carbohydrate");
-            int urlColIndex = c.getColumnIndex("img");
-
-            product = new Product();
-            product.setId(Integer.valueOf(c.getString(idColIndex)));
-            product.setName(c.getString(nameColIndex));
-            product.setPfc(new PFC(c.getDouble(proteinColIndex), c.getDouble(fatColIndex)
-                    , c.getDouble(carbohydrateColIndex)));
-            product.setUrl(c.getString(urlColIndex))
-            ;
-            Log.d("product_info" , "protein = " + c.getDouble(proteinColIndex) + " ,fat = " + c.getDouble(fatColIndex)
-                    +  + c.getDouble(carbohydrateColIndex));
-        } else {
-            product = new Product("Продукты не найдены");
-        }
-        c.close();
-        dbHelper.close();
-        return product;
+        return getProductList(context,id,null,null).get(0);
     }
 
 
     public static ArrayList<Product> getSearchProductList(Context context, String query) {
+        return getProductList(context,0,query,null);
+    }
+
+    public static ArrayList<Product> getDietListSorted(Context applicationContext, boolean orderBy) {
+        return orderBy?getProductList(applicationContext,0,null,"name asc"):getProductList(applicationContext,0,null,"name desc");
+    }
+
+    private static ArrayList<Product> getProductList(Context context, long id, String query, String orderBy) {
         ArrayList<Product> products = new ArrayList<>();
-        DietDB dbHelper = new DietDB(context);
-        dbHelper.create_db();
-        dbHelper.open();
+        DietDB dbHelper = DietDB.openDB(context);
         if (dbHelper.database == null){
             Toast.makeText(context,"Нет подключения к БД",Toast.LENGTH_SHORT).show();
             return null;
         }
-        //Cursor c = dbHelper.database.rawQuery("select * from " + DietDB.TABLE_PRODUCT,null);
+
+        String selection = null;
+        String[] selectionArgs = null;
+        String limit = null;
+        if(query != null ){
+            if(!query.isEmpty()) {
+                selection = "name like ?";
+                selectionArgs = new String[]{"%"+query+"%"};
+                limit ="10";
+            }
+        }
+        else if(id>0){
+            selection = "id = ?";
+            selectionArgs = new String[]{String.valueOf(id)};
+            limit = "1";
+        }
+
         Cursor c = dbHelper.database.query(true,DietDB.TABLE_PRODUCT,new String[]{"id","name","protein","fat","carbohydrate","img"}
-                ,"name like ?",new String[]{"%"+query+"%"},null,null,null,"10");
+                ,selection,selectionArgs,null,null,orderBy,limit);
         if (c.moveToFirst()) {
             int idColIndex = c.getColumnIndex("id");
             int nameColIndex = c.getColumnIndex("name");
@@ -223,6 +182,7 @@ public class Product {
         dbHelper.close();
         return products;
     }
+
 }
 
 

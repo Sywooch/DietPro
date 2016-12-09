@@ -70,7 +70,7 @@ public class MyDataActivity extends AppCompatActivity {
     private void saveData(){
         int radioSex = radioGroupSex.getCheckedRadioButtonId();
         int radioBodyType = radioGroupBodyType.getCheckedRadioButtonId();
-        UserData user = new UserData();
+        UserData user = UserData.readPref(getApplicationContext());
         if (radioSex > 0){
             switch (radioSex){
                 case R.id.radioSexMale:

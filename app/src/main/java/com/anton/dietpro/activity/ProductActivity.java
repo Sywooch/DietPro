@@ -27,6 +27,8 @@ import java.util.ArrayList;
 public class ProductActivity extends AppCompatActivity {
     private ListView listView;
     private ProductAdapter adapterProduct;
+    private boolean orderBy = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +48,6 @@ public class ProductActivity extends AppCompatActivity {
             suggestions.saveRecentQuery(query, null);
             Toast.makeText(this, query, Toast.LENGTH_SHORT).show();
             doSearch(query);
-            //doMySearch(query);
         }else {
             ArrayList<Product> products;
             products = Product.getProductList(getApplicationContext());
@@ -56,7 +57,6 @@ public class ProductActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getApplicationContext(),"Выбран продукт с id:" + id, Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getApplicationContext(),ProductDetailsActivity.class);
                 intent.putExtra("productId",id + "");
                 startActivityForResult(intent,1);
@@ -82,12 +82,14 @@ public class ProductActivity extends AppCompatActivity {
         // Assumes current activity is the searchable activity
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+        searchView.getQuery();
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
                 Intent intent = new Intent(getApplicationContext(), ProductActivity.class);
                 startActivity(intent);
-                return false;
+
+                return true;
             }
         });
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -99,7 +101,7 @@ public class ProductActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String s) {
                 doSearch(s);
-                return false;
+                return true;
             }
         });
         return true;
@@ -120,15 +122,15 @@ public class ProductActivity extends AppCompatActivity {
             return true;
         }
         if (id == R.id.action_search) {
-            onSearchRequested();
+            //onSearchRequested();
             return true;
         }
-        if(id == R.id.action_remove){
-            //Очищаем историю
-            SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this,
-                    SuggestionProvider.AUTHORITY, SuggestionProvider.MODE);
-            suggestions.clearHistory();
-            return true;
+
+        if (id == R.id.action_sort){
+            ArrayList<Product> products = Product.getDietListSorted(getApplicationContext(),orderBy);
+            ProductAdapter adapter = new ProductAdapter(this,products);
+            listView.setAdapter(adapter);
+            orderBy = !orderBy;
         }
         return super.onOptionsItemSelected(item);
     }

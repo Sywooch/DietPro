@@ -90,74 +90,6 @@ public class Diet {
     }
 
 
-    public static ArrayList<Diet> getDietList(Context context){
-
-        ArrayList<Diet> diets = new ArrayList<>();
-        DietDB dbHelper = new DietDB(context);
-        dbHelper.create_db();
-        dbHelper.open();
-        if (dbHelper.database == null){
-            Toast.makeText(context,"Нет подключения к БД",Toast.LENGTH_SHORT).show();
-            return null;
-        }
-        Cursor c = dbHelper.database.rawQuery("select * from " + DietDB.TABLE_DIET,null);
-        if (c.moveToFirst()) {
-            int idColIndex = c.getColumnIndex("id");
-            int nameColIndex = c.getColumnIndex("name");
-            int descriptionColIndex = c.getColumnIndex("description");
-            int lengthColIndex = c.getColumnIndex("length");
-            int effectColIndex = c.getColumnIndex("efficitnce");
-
-            do {
-                Diet diet = new Diet(
-                        Integer.valueOf(c.getString(idColIndex))
-                        ,c.getString(nameColIndex)
-                        ,Integer.valueOf(c.getString(lengthColIndex))
-                        ,c.getString(descriptionColIndex)
-                );
-                diet.setEffect(c.getDouble(effectColIndex));
-                diets.add(diet);
-            } while (c.moveToNext());
-        } else {
-            Diet emptyDiet = new Diet("Диеты не найдены",0,null);
-            diets.add(emptyDiet);
-        }
-        c.close();
-        dbHelper.close();
-        return diets;
-    }
-
-    public static Diet getDietById(long id, Context context){
-        Diet diet;
-        DietDB dbHelper = new DietDB(context);
-        dbHelper.create_db();
-        dbHelper.open();
-        if (dbHelper.database == null){
-            Toast.makeText(context,"Нет подключения к БД",Toast.LENGTH_SHORT).show();
-            return null;
-        }
-        Cursor c = dbHelper.database.rawQuery("select * from " + DietDB.TABLE_DIET +
-                " where id = " + id + " limit 1",null);
-        if (c.moveToFirst()) {
-            int idColIndex = c.getColumnIndex("id");
-            int nameColIndex = c.getColumnIndex("name");
-            int descriptionColIndex = c.getColumnIndex("description");
-            int lengthColIndex = c.getColumnIndex("length");
-            int effectColIndex = c.getColumnIndex("efficitnce");
-            diet = new Diet(
-                    Integer.valueOf(c.getString(idColIndex))
-                    ,c.getString(nameColIndex)
-                    ,Integer.valueOf(c.getString(lengthColIndex))
-                    ,c.getString(descriptionColIndex)
-            );
-            diet.setEffect(c.getDouble(effectColIndex));
-        } else {
-            diet = new Diet("Диеты не найдены",0,null);
-        }
-        c.close();
-        dbHelper.close();
-        return diet;
-    }
 
     public static Integer getCurrentDietId(Context context) {
         UserData data = UserData.readPref(context);
@@ -208,18 +140,48 @@ public class Diet {
         dbHelper.close();
     }
 
+    public static ArrayList<Diet> getDietList(Context context){
+        return Diet.getDietList(context,0,null,null);
+    }
+
+    public static Diet getDietById(long id, Context context){
+        return Diet.getDietList(context,id,null,null).get(0);
+    }
+
     public static ArrayList<Diet> getSearchDietList(Context context, String query) {
+        return Diet.getDietList(context,0,query,null);
+    }
+
+    public static ArrayList<Diet> getDietListSorted(Context context,boolean orderBy){
+
+        return orderBy?getDietList(context,0,null,"name asc"):getDietList(context,0,null,"name desc");
+    }
+
+    private static ArrayList<Diet> getDietList(Context context,long id,String query, String orderBy){
 
         ArrayList<Diet> diets = new ArrayList<Diet>();
-        DietDB dbHelper = new DietDB(context);
-        dbHelper.create_db();
-        dbHelper.open();
+        DietDB dbHelper = DietDB.openDB(context);
         if (dbHelper.database == null){
             Toast.makeText(context,"Нет подключения к БД",Toast.LENGTH_SHORT).show();
             return null;
         }
-        Cursor c = dbHelper.database.query(true,Diet.TABLE_NAME,new String[]{"id","name","description","length"}
-                ,"name like ?",new String[]{"%"+query+"%"},null,null,null,"10");
+        String selection = null;
+        String[] selectionArgs = null;
+        String limit = null;
+        if(query != null ){
+            if(!query.isEmpty()) {
+                selection = "name like ?";
+                selectionArgs = new String[]{"%"+query+"%"};
+                limit ="10";
+            }
+        }
+        else if(id>0){
+            selection = "id = ?";
+            selectionArgs = new String[]{String.valueOf(id)};
+            limit = "1";
+        }
+        Cursor c = dbHelper.database.query(true,Diet.TABLE_NAME,new String[]{"id","name","description","length","efficitnce"}
+                ,selection,selectionArgs,null,null,orderBy,limit);
 
         if (c.moveToFirst()) {
             int idColIndex = c.getColumnIndex("id");
@@ -227,7 +189,6 @@ public class Diet {
             int descriptionColIndex = c.getColumnIndex("description");
             int lengthColIndex = c.getColumnIndex("length");
             int effectColIndex = c.getColumnIndex("efficitnce");
-
             do {
                 Diet diet = new Diet(
                         Integer.valueOf(c.getString(idColIndex))
@@ -247,14 +208,12 @@ public class Diet {
         return diets;
     }
 
-
     /*
     * Метод производит поиск по базе данных с учетом вкусовых предпочтений пользователя
     * @return номер самой подходящей по вкусам диеты
      */
     public static long generateDiet(Context context) {
         UserData user = UserData.readPref(context);
-
         long idDiet = 0;
         String nameDiet = "";
         String taste = user.getTastePreferences();
@@ -306,8 +265,6 @@ public class Diet {
             }
         }
         db.close();
-
-
         return idDiet;
     }
 }
