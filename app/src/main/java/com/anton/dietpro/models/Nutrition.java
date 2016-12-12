@@ -255,7 +255,8 @@ public class Nutrition {
                 + " on " + Nutrition.TABLE_MENU_NAME + ".id_ingestion = " + Nutrition.TABLE_INGESTION_NAME + ".id " +
                 join
                 + " where " + Nutrition.TABLE_MENU_NAME + ".id_diet = " + idDiet
-                + where;
+                + where
+                +" order by "+ Nutrition.TABLE_INGESTION_NAME + ".id asc";
         Cursor c = dbHelper.database.rawQuery(query
                 ,null);
         if (c.moveToFirst()) {

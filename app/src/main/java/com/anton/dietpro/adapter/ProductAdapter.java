@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.anton.dietpro.R;
+import com.anton.dietpro.models.CircleTransform;
 import com.anton.dietpro.models.Diet;
 import com.anton.dietpro.models.Product;
 import com.squareup.picasso.Picasso;
@@ -60,6 +61,7 @@ public class ProductAdapter extends BaseAdapter {
                 if (product.getUrl().trim().length() > 0) {
                     Picasso.with(parent.getContext())
                             .load(product.getUrl())
+                            .transform(new CircleTransform())
                             .placeholder(R.drawable.progress_animation)
                             .error(R.drawable.image_not_load)
                             .into(productImg);
