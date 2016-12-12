@@ -96,7 +96,6 @@ public class NutritionAdapter extends BaseAdapter {
                     else{
                         Nutrition n = Nutrition.getNutritionById(nutrition_id,view.getContext());
                         if(Diary.isCompleteMenu(view.getContext(), n.getId())) {
-                            Log.d("INGESTION2","sET COMPLETE");
                             ingestionComplete.setBackgroundColor(view.getResources().getColor(R.color.colorGreen));
                         }
                         Log.d("INGESTION2","DONT SET COMPLETE");

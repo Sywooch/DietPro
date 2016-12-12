@@ -9,9 +9,13 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -31,18 +35,23 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
-public class MyDiaryActivity extends AppCompatActivity {
+public class MyDiaryActivity extends AppCompatActivity implements View.OnTouchListener {
 
-    TextView header;
+    final private String TAG_DAY = "SWIPE_DAY";
+    final private String TAG_ACTION = "SWIPE_DAY";
+    private long swipe_day = 0;
+    private TextView header;
+    private float fromPositionX;
+    private float fromPositionY;
+    private ListView listNutrition;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
 
-        Date today = new Date();
-        SimpleDateFormat df = new SimpleDateFormat("dd.MM");
-        df.setTimeZone(TimeZone.getTimeZone("Europe/Moscow"));
         long day = Diet.getCurrentDietDay(getApplicationContext());
+        swipe_day = day;
         if ((day<1) && (Diet.getCurrentDietId(getApplicationContext())<1) ){
             Intent backIntent = new Intent(getApplicationContext(),MainActivity.class);
             startActivity(backIntent);
@@ -50,6 +59,9 @@ public class MyDiaryActivity extends AppCompatActivity {
 
 
         setContentView(R.layout.activity_my_diary);
+
+        RelativeLayout v= (RelativeLayout) findViewById(R.id.content_my_diary);
+        v.setOnTouchListener(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null){
@@ -62,16 +74,59 @@ public class MyDiaryActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext() , "Час диеты "+ hours ,Toast.LENGTH_SHORT).show();
 */
 
-        String formattedDate = df.format(today.getTime());
+        String formattedDate = getDate(1);
         header = (TextView) findViewById(R.id.headerDay);
-        header.setText(String.format(header.getText().toString(), formattedDate,day));
-        ArrayList<Nutrition> nutritions = Nutrition.getNutritionsByDay(day,getApplicationContext());
-        NutritionAdapter adapterNutrition = new NutritionAdapter(this,nutritions);
-        ListView listNutrition = (ListView)findViewById(R.id.listNutrition);
-        listNutrition.setAdapter(adapterNutrition);
+        header.setText(String.format(getString(R.string.headerDay), formattedDate,day));
+        listNutrition = (ListView)findViewById(R.id.listNutrition);
+        initList(day);
+        listNutrition.setOnTouchListener(this);
 
     }
 
+    @Override
+    public boolean onTouch(View view, MotionEvent event) {
+        switch (event.getAction())
+        {
+            case MotionEvent.ACTION_DOWN:
+                fromPositionX = event.getX();
+                fromPositionY = event.getY();
+                break;
+            case MotionEvent.ACTION_UP:
+                float toPositionX = event.getX();
+                float toPositionY = event.getY();
+                if( (Math.abs(fromPositionY - toPositionY)<300) && (Math.abs(fromPositionX - toPositionX)>400) ) {
+                    if (fromPositionX > toPositionX) {
+                        if (swipe_day+1 > 0 && swipe_day+1 <= (Diet.getDietById(Diet.getCurrentDietId(getApplicationContext()), getApplicationContext())).getLength()) {
+                            swipe_day++;
+                            String formattedDate = getDate(Math.abs(swipe_day-Diet.getCurrentDietDay(getApplicationContext())));
+                            header.setText(String.format(getString(R.string.headerDay), formattedDate, swipe_day));
+                            initList(swipe_day);
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Конец диеты.", Toast.LENGTH_SHORT).show();
+                        }
+                    } else if (fromPositionX < toPositionX) {
+                        if (swipe_day-1 > 0 && swipe_day-1 <= (Diet.getDietById(Diet.getCurrentDietId(getApplicationContext()), getApplicationContext())).getLength()) {
+                            swipe_day--;
+                            String formattedDate = getDate(-Math.abs(swipe_day-Diet.getCurrentDietDay(getApplicationContext())));
+                            header.setText(String.format(getString(R.string.headerDay), formattedDate, swipe_day));
+                            initList(swipe_day);
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Начало диеты.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+        return false;
+    }
+
+    private void initList(long day) {
+        ArrayList<Nutrition> nutritions = Nutrition.getNutritionsByDay(day, getApplicationContext());
+        NutritionAdapter adapterNutrition = new NutritionAdapter(this, nutritions);
+        listNutrition.setAdapter(adapterNutrition);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -89,6 +144,16 @@ public class MyDiaryActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private String getDate(long countDays) {
+        if (countDays==0){
+            countDays = 1;//сегодня
+        }
+        Date today = new Date(System.currentTimeMillis() + ((24 * 60 * 60 * 1000)*countDays));
+        SimpleDateFormat df = new SimpleDateFormat("dd.MM");
+        df.setTimeZone(TimeZone.getTimeZone("Europe/Moscow"));
+        return df.format(today.getTime());
     }
 
 }

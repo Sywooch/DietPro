@@ -5,6 +5,7 @@ import android.os.Bundle;
 //import android.support.design.widget.FloatingActionButton;
 import android.support.annotation.NonNull;
 import android.support.v4.view.MenuItemCompat;
+import android.telephony.ServiceState;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -25,10 +26,12 @@ import com.anton.dietpro.activity.DietActivity;
 import com.anton.dietpro.models.API;
 import com.anton.dietpro.models.ApiYandex;
 import com.anton.dietpro.models.DietDB;
+import com.anton.dietpro.models.Nutrition;
 import com.anton.dietpro.services.MyService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.sql.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,7 +45,6 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private DietDB db;
-    public final static String TEST_STRING = "hello world";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,24 +52,17 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        Intent intent = getIntent();
-
-
-        String fileName = intent.getStringExtra(TEST_STRING);
-        if (!TextUtils.isEmpty(fileName)){
-            Toast.makeText(this,fileName,Toast.LENGTH_LONG).show();
-        }
         db = new DietDB(this);
         db.create_db();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        //MenuItemCompat.setOnActionExpandListener(searchMenuItem, this);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        startService(new Intent(this, MyService.class));
+
 
     }
 
@@ -90,19 +85,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_search){
-            MenuItemCompat.setOnActionExpandListener(item, new MenuItemCompat.OnActionExpandListener() {
-                @Override
-                public boolean onMenuItemActionExpand(MenuItem item) {
-                    return false;
-                }
-
-                @Override
-                public boolean onMenuItemActionCollapse(MenuItem item) {
-                    return false;
-                }
-            });
-        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -113,20 +95,24 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
     public void showCalc(View view)
     {
-        //stopService(new Intent(this, MyService.class));
+        stopService(new Intent(this, MyService.class));
         Intent intent = new Intent(this,CalcActivity.class);
         startActivity(intent);
     }
+
     public void showMyData(MenuItem item){
         Intent intent = new Intent(this, MyDataActivity.class);
         startActivity(intent);
     }
+
     public void showMyDiary(MenuItem item){
         Intent intent = new Intent(this, MyDiaryActivity.class);
         startActivity(intent);
     }
+
     public void showCalc(MenuItem item){
         Intent intent = new Intent(this,CalcActivity.class);
         startActivity(intent);
@@ -141,16 +127,18 @@ public class MainActivity extends AppCompatActivity
         Intent intent = new Intent(this,ProductActivity.class);
         startActivity(intent);
     }
+
     public void showDiet(View v){
         Intent intent = new Intent(this,DietActivity.class);
         startActivity(intent);
     }
+
     public void showProduct(View v){
         Intent intent = new Intent(this,ProductActivity.class);
         startActivity(intent);
     }
+
     public void showMyDiary(View v){
-        //startService(new Intent(this, MyService.class));
         Intent intent = new Intent(this, MyDiaryActivity.class);
         startActivity(intent);
     }
