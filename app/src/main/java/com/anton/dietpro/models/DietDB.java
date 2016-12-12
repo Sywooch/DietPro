@@ -29,10 +29,6 @@ public class DietDB extends SQLiteOpenHelper {
     public static final String TABLE_DIET = "diet";
     public static final String TABLE_PRODUCT = "product";
 
-    public static final String COLUMN_ID = "id";
-    public static final String COLUMN_NAME = "name";
-    public static final String COLUMN_DESCRIPTION = "description";
-    public static final String COLUMN_LENGTH = "length";
     public SQLiteDatabase database;
     private Context myContext;
 
@@ -52,6 +48,7 @@ public class DietDB extends SQLiteOpenHelper {
     }
 
     public void create_db(){
+        //TODO добавить проверку версии БД
         InputStream myInput = null;
         OutputStream myOutput = null;
         try {

@@ -35,22 +35,22 @@ public class NutritionAdapter extends BaseAdapter {
 
     public NutritionAdapter(Context contex, List<Nutrition> list) {
         this.list = list;
-        layoutInflater = (LayoutInflater) contex.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.layoutInflater = (LayoutInflater) contex.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
     public int getCount() {
-        return list.size();
+        return this.list.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return list.get(position);
+        return this.list.get(position);
     }
 
     @Override
     public long getItemId(int position) {
-        return list.get(position).getId();
+        return this.list.get(position).getId();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -58,58 +58,53 @@ public class NutritionAdapter extends BaseAdapter {
     public View getView(int position, final View convertView, ViewGroup parent) {
         View view = convertView;
         if (view == null){
-            view = layoutInflater.inflate(R.layout.nutrition_layout,parent,false);
+            view = this.layoutInflater.inflate(R.layout.nutrition_layout,parent,false);
         }
         final Nutrition nutrition = getNutrition(position);
-        ArrayList<Product> prods = Nutrition.getNutritionProducts(nutrition.getDay(),position + 1,parent.getContext());
-        if (prods == null){
-            prods = new ArrayList<>();
-            prods.add(new Product("Продукты не найдены."));
-        }
-        nutrition.setProducts(prods);
 
         final ToggleButton ingestionComplete = (ToggleButton) view.findViewById(R.id.ingestionCompelete);
 
         if(Diary.isCompleteMenu(view.getContext(), getItemId(position))) {
-            ingestionComplete.setBackgroundColor(view.getResources().getColor(R.color.colorGreen));
+            ingestionComplete.setChecked(true); //ingestionComplete.setBackgroundColor(view.getResources().getColor(R.color.colorGreen));
+        }
+        else{
+            ingestionComplete.setChecked(false);
         }
         TextView ingestionName = (TextView) view.findViewById(R.id.ingestionName);
         ingestionName.setText(nutrition.getName());
-
         TextView amountKkal = (TextView) view.findViewById(R.id.amountKkal);
-        amountKkal.setText( String.format(amountKkal.getText().toString() , nutrition.getAmountKkal().intValue() ));
+        amountKkal.setText( String.format(view.getResources().getString(R.string.amountKkal) , nutrition.getAmountKkal().intValue() ));
 
         ListView productList =(ListView) view.findViewById(R.id.listProductNutrition);
-        ProductItemAdapter productItems = new ProductItemAdapter(parent.getContext(), prods);
+        ProductItemAdapter productItems = new ProductItemAdapter(parent.getContext(), nutrition.getProducts());
         productList.setAdapter(productItems);
         productList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long nutrition_id) {
 
                 ToggleButton productComplete = (ToggleButton) view.findViewById(R.id.productComplete);
-                productComplete.performClick();
+                productComplete.setChecked(!productComplete.isChecked());
                 if (productComplete.isChecked()) {
-                    if (!Diary.insertProductComplete(view.getContext(), nutrition_id)) { // сохраняем в БД отчет о употребленном продукте(id - nutrition_id)
-                        Toast.makeText(view.getContext(), "Ошибка. Попробуйте снова.", Toast.LENGTH_LONG).show();
-                        productComplete.performClick();
+                    // сохраняем в БД отчет о употребленном продукте(id - nutrition_id)
+                    if (!Diary.insertProductComplete(view.getContext(), nutrition_id)) {
+                        Toast.makeText(view.getContext(), view.getResources().getString(R.string.errorMessage), Toast.LENGTH_LONG).show();
+                        productComplete.setChecked(false);
                     }
                     else{
                         Nutrition n = Nutrition.getNutritionById(nutrition_id,view.getContext());
                         if(Diary.isCompleteMenu(view.getContext(), n.getId())) {
-                            ingestionComplete.setBackgroundColor(view.getResources().getColor(R.color.colorGreen));
+                            ingestionComplete.setChecked(true);
                         }
-                        Log.d("INGESTION2","DONT SET COMPLETE");
                     }
-
                 }
                 else{
                     if (!Diary.removeNutrition(view.getContext(), nutrition_id)){
-                        Toast.makeText(view.getContext(), "Ошибка удаления. Попробуйте снова.", Toast.LENGTH_LONG).show();
-                        productComplete.performClick();
+                        Toast.makeText(view.getContext(), view.getResources().getString(R.string.errorMessage), Toast.LENGTH_LONG).show();
+                        productComplete.setChecked(true);
                     }
                     else{
-                        ingestionComplete.setBackgroundColor(view.getResources().getColor(R.color.colorPrimary));
-                        Toast.makeText(view.getContext(), "Отменено.", Toast.LENGTH_LONG).show();
+                        ingestionComplete.setChecked(false);
+                        Toast.makeText(view.getContext(), view.getResources().getString(R.string.canceled), Toast.LENGTH_LONG).show();
                     }
                 }
             }
@@ -119,48 +114,42 @@ public class NutritionAdapter extends BaseAdapter {
             public void onClick(View view) {
                 View viewParent = (View) view.getParent();
                 ListView productList = (ListView) viewParent.findViewById(R.id.listProductNutrition);
-                TextView test = (TextView) viewParent.findViewById(R.id.ingestionName);
                 if (productList != null) {
-                    int firstPos = productList.getFirstVisiblePosition();
-                    int lastPos = productList.getHeaderViewsCount();
                     int count = productList.getChildCount();
                     // заполнение/отмена всех приемов пищи
                     if (ingestionComplete.isChecked()) {
-
-                        ingestionComplete.setBackgroundColor(view.getResources().getColor(R.color.colorGreen));
+                        ingestionComplete.setChecked(true);
                         for(int i = 0; i<count; i++) {
                             View itemView = productList.getChildAt(i);
                             ToggleButton productComplete = (ToggleButton) itemView.findViewById(R.id.productComplete);
                             long nutrition_id = productList.getAdapter().getItemId(i);
-                            if (!Diary.insertProductComplete(viewParent.getContext(), nutrition_id)) { // сохраняем в БД отчет о употребленном продукте(id - nutrition_id)
-                                Toast.makeText(view.getContext(), "Ошибка. Попробуйте снова.", Toast.LENGTH_LONG).show();
+                            // сохраняем в БД отчет о употребленном продукте(id - nutrition_id)
+                            if (!Diary.insertProductComplete(viewParent.getContext(), nutrition_id)) {
+                                Toast.makeText(view.getContext(), view.getResources().getString(R.string.errorMessage), Toast.LENGTH_LONG).show();
                             }
                             else {
-                                productComplete.performClick();
+                                productComplete.setChecked(true);
                             }
-
                         }
                     }
                     else{
-                        ingestionComplete.setBackgroundColor(view.getResources().getColor(R.color.colorPrimary));
+                        ingestionComplete.setChecked(false);
                         for(int i = 0; i<count; i++) {
                             View itemView = productList.getChildAt(i);
                             ToggleButton productComplete = (ToggleButton) itemView.findViewById(R.id.productComplete);
-                            long nutrition_id = productList.getAdapter().getItemId(i); //getView(i,null,null);
+                            long nutrition_id = productList.getAdapter().getItemId(i);
                             if (!Diary.removeNutrition(viewParent.getContext(), nutrition_id)) {
-                                Toast.makeText(viewParent.getContext(), "Ошибка удаления. Попробуйте снова.", Toast.LENGTH_LONG).show();
+                                Toast.makeText(viewParent.getContext(), view.getResources().getString(R.string.errorMessage), Toast.LENGTH_LONG).show();
                             } else {
-                                productComplete.performClick();
-                                Toast.makeText(viewParent.getContext(), "Отменено.", Toast.LENGTH_LONG).show();
+                                productComplete.setChecked(false);
+                                Toast.makeText(viewParent.getContext(), view.getResources().getString(R.string.canceled), Toast.LENGTH_LONG).show();
                             }
                         }
                     }
                 }
                 else{
-                    Toast.makeText(viewParent.getContext(), "Список продуктов не найден.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(viewParent.getContext(), view.getResources().getString(R.string.listProductsNotFound), Toast.LENGTH_SHORT).show();
                 }
-
-                Diary.printDiary(view.getContext());
             }
         });
         return view;

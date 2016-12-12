@@ -193,13 +193,13 @@ public class MyDataActivity extends AppCompatActivity {
 
     public void onClickSave(View v){
         if(radioGroupSex.getCheckedRadioButtonId()<0) {
-            Toast.makeText(this, "Не выбран пол", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.errorDontAcceptSex), Toast.LENGTH_SHORT).show();
         }
         if(radioGroupBodyType.getCheckedRadioButtonId()<0) {
-            Toast.makeText(this, "Не выбран тип телосложения", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,getString(R.string.errorDontAcceptBodyType) , Toast.LENGTH_SHORT).show();
         }
         saveData();
-        Toast.makeText(this, "Данные сохранены", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.successSaveData), Toast.LENGTH_SHORT).show();
     }
 
 }

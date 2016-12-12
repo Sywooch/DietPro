@@ -15,7 +15,8 @@ import com.anton.dietpro.activity.MainActivity;
 import com.anton.dietpro.models.Nutrition;
 
 import java.sql.Date;
-import java.util.Random;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class MyService extends Service {
@@ -39,7 +40,6 @@ public class MyService extends Service {
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-//        TODO реализовать проверку в БД на наличие ближайших(через 15-25 минут) приемов пищи
         run();
         return super.onStartCommand(intent, flags, startId);
     }
@@ -47,12 +47,10 @@ public class MyService extends Service {
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private void run() {
             try {
-
                 Nutrition nutrition = Nutrition.getNutritionByTime(new Date(System.currentTimeMillis() + (( 60 * 1000)*15)),getApplicationContext());
                 if (nutrition != null) {
-                    sendNotif();
+                    sendNotif(nutrition);
                 }
-
                 TimeUnit.MINUTES.sleep(5);
                 startService(new Intent(getApplicationContext(),MyService.class));
             } catch (InterruptedException e) {
@@ -63,31 +61,29 @@ public class MyService extends Service {
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-    private void sendNotif() {
+    private void sendNotif(Nutrition nutrition) {
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         Intent intent = new Intent(this, MainActivity.class);
         PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
-
         Notification.Builder builder = new Notification.Builder(this);
         builder.setAutoCancel(false);
-        builder.setTicker("Тикер текст");
-        builder.setContentTitle("DietPro Notification");
-        builder.setContentText("Скоро будет прием пищи. Не забудьте.");
+        builder.setTicker(getString(R.string.tikerText));
+        builder.setContentTitle(getString(R.string.notificationTitle));//DietPro Notification
+        builder.setContentText(String.format(getString(R.string.notificationText),
+                nutrition.getName(),
+                ( new SimpleDateFormat("hh:mm",new Locale("ru","RU"))).format(nutrition.getDatetime()) ));
         builder.setSmallIcon(R.mipmap.ic_launcher);
         builder.setContentIntent(pIntent);
-        builder.setOngoing(true);
+        builder.setAutoCancel(true);
         builder.setShowWhen(true);
-        builder.setSubText("Пора кушать");   //API level 16
-        builder.setNumber(100);
+        builder.setSubText(getString(R.string.timeForEat));   //API level 16
         builder.setPriority(Notification.PRIORITY_HIGH);
         builder.setWhen(System.currentTimeMillis());
         Notification myNotication = builder.build();
         myNotication.defaults = Notification.DEFAULT_SOUND |
                 Notification.DEFAULT_VIBRATE;
         myNotication.flags |= Notification.FLAG_AUTO_CANCEL;
-        Random rd = new Random();
-
-        manager.notify(rd.nextInt(100), myNotication);
+        manager.notify(nutrition.getId(), myNotication);
     }
 
 

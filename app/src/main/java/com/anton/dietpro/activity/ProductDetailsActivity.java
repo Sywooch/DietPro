@@ -1,27 +1,19 @@
 package com.anton.dietpro.activity;
 
 import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anton.dietpro.R;
-import com.anton.dietpro.models.Diet;
 import com.anton.dietpro.models.Product;
 import com.squareup.picasso.Picasso;
-
-import static com.anton.dietpro.R.id.imageView;
 
 public class ProductDetailsActivity extends AppCompatActivity {
 
@@ -31,8 +23,6 @@ public class ProductDetailsActivity extends AppCompatActivity {
     private TextView productFat;
     private TextView productCarbohydrate;
     private ImageView productUrl;
-    private Intent intent;
-    private long productId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,39 +38,17 @@ public class ProductDetailsActivity extends AppCompatActivity {
         productFat = (TextView) findViewById(R.id.productFat);
         productCarbohydrate = (TextView) findViewById(R.id.productCarbohydrate);
         productUrl = (ImageView) findViewById(R.id.productImg);
-        intent = getIntent();
+        Intent intent = getIntent();
         if (intent.getExtras() != null) {
-            productId = Integer.valueOf(intent.getExtras().getString("productId"));
+            long productId = Integer.valueOf(intent.getExtras().getString("productId"));
             this.initView(productId);
         }
         else {
-            Toast.makeText(this, "Произошла ошибка. Продукт не найден.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.productsNotFound), Toast.LENGTH_SHORT).show();
         }
 
     }
 
-    private void initView(long id){
-        if (id == 0){
-            productName.setText("Продукт не найден.");
-        }
-        else{
-            Product product = Product.getProductById(id, getApplicationContext());
-            productName.setText(product.getName());
-            productDescription.setText(Html.fromHtml(getResources().getString(R.string.productDescription))); /*String.valueOf(product.getDescription())*/
-            productProtein.setText(String.format(productProtein.getText().toString(), (float)product.getPfc().getProtein()));
-            productFat.setText(String.format(productFat.getText().toString(), ((float)product.getPfc().getFat())));
-            productCarbohydrate.setText(String.format(productCarbohydrate.getText().toString(), (float)product.getPfc().getCarbohydrate()));
-            if( !product.getUrl().equals("")) {
-                Picasso.with(getApplicationContext())
-                        .load(product.getUrl())
-                       // .resize(350,350)
-                        .placeholder(R.drawable.progress_animation)
-                        .error(R.drawable.image_not_load)
-                        .into(productUrl);
-            }
-
-        }
-    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -100,4 +68,28 @@ public class ProductDetailsActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    private void initView(long id){
+        if (id == 0){
+            productName.setText(getString(R.string.productsNotFound));
+        }
+        else{
+            Product product = Product.getProductById(id, getApplicationContext());
+            productName.setText(product.getName());
+            productDescription.setText(Html.fromHtml(getResources().getString(R.string.productDescription))); /*String.valueOf(product.getDescription())*/
+            productProtein.setText(String.format(productProtein.getText().toString(), (float)product.getPfc().getProtein()));
+            productFat.setText(String.format(productFat.getText().toString(), ((float)product.getPfc().getFat())));
+            productCarbohydrate.setText(String.format(productCarbohydrate.getText().toString(), (float)product.getPfc().getCarbohydrate()));
+            if( !product.getUrl().equals("")) {
+                Picasso.with(getApplicationContext())
+                        .load(product.getUrl())
+                        // .resize(350,350)
+                        .placeholder(R.drawable.progress_animation)
+                        .error(R.drawable.image_not_load)
+                        .into(productUrl);
+            }
+
+        }
+    }
+
 }

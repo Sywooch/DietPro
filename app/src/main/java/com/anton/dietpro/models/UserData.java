@@ -20,8 +20,8 @@ public class UserData {
     public static final Integer BODY_TYPE_MESOMORPH = 2;
     public static final Integer BODY_TYPE_ENDOMORPH = 3;
     public static final String MY_PREF = "MY_PREF";
-    private static final String MY_PREF_TAG = "myData";
 
+    private static final String MY_PREF_TAG = "myData";
     private String name;
     private String tastePreferences;
     private Integer age = 0;
@@ -134,13 +134,13 @@ public class UserData {
         ed.apply();
 
     }
+
     public static UserData readPref(Context context){
-
         SharedPreferences shared = context.getSharedPreferences(UserData.MY_PREF, context.MODE_PRIVATE);
-
         String myData = shared.getString(UserData.MY_PREF_TAG, "");
         Gson gson = new Gson();
         UserData user = gson.fromJson(myData,UserData.class);
         return (user != null ? user : new UserData());
     }
+
 }

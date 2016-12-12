@@ -58,16 +58,10 @@ public class ProductActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getApplicationContext(),ProductDetailsActivity.class);
-                intent.putExtra("productId",id + "");
+                intent.putExtra("productId",String.valueOf(id));
                 startActivityForResult(intent,1);
             }
         });
-    }
-
-    private void doSearch(String query) {
-        ArrayList<Product> products = Product.getSearchProductList(getApplicationContext(), query);
-        adapterProduct = new ProductAdapter(this, products);
-        listView.setAdapter(adapterProduct);
     }
 
     @Override
@@ -133,6 +127,12 @@ public class ProductActivity extends AppCompatActivity {
             orderBy = !orderBy;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void doSearch(String query) {
+        ArrayList<Product> products = Product.getSearchProductList(getApplicationContext(), query);
+        adapterProduct = new ProductAdapter(this, products);
+        listView.setAdapter(adapterProduct);
     }
 
 }

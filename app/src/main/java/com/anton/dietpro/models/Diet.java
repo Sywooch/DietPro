@@ -1,26 +1,20 @@
 package com.anton.dietpro.models;
 
-import android.app.Application;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.util.Log;
 import android.widget.Toast;
-import org.w3c.dom.Text;
+
+import com.anton.dietpro.R;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
-import java.util.StringJoiner;
 import java.util.TimeZone;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+
 
 /**
  * Created by admin on 02.11.16.
@@ -34,6 +28,7 @@ public class Diet {
     private int length;
     private double effect;
     private String description;
+
     public Diet(int id, String name, int length, String description) {
         this.id = id;
         this.name = name;
@@ -120,12 +115,11 @@ public class Diet {
 
         Date beginDay = Diet.getCurrentDietDate(context);
         if (beginDay == null ){
-            Toast.makeText(context,"Вы не выбрали диету.",Toast.LENGTH_LONG).show();
+            Toast.makeText(context,context.getString(R.string.errorDontAcceptDiet),Toast.LENGTH_LONG).show();
             return 0;
         }
         long diff = today.getTime() - beginDay.getTime();
         long day = diff / (24 * 60 * 60 * 1000);
-        long hours = diff / ( 60 * 60 * 1000);
         day++;
         return day;
     }
@@ -134,7 +128,7 @@ public class Diet {
         DietDB dbHelper = DietDB.openDB(applicationContext);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         db.beginTransaction();
-        int count = db.delete(Diary.TABLE_DIARY_NAME,null,null); //TODO добавить удаление только выбранной диеты(хотя и так сойдет)
+        db.delete(Diary.TABLE_DIARY_NAME,null,null); //TODO добавить удаление только выбранной диеты(хотя и так сойдет)
         db.setTransactionSuccessful();
         db.endTransaction();
         dbHelper.close();
@@ -157,12 +151,65 @@ public class Diet {
         return orderBy?getDietList(context,0,null,"name asc"):getDietList(context,0,null,"name desc");
     }
 
+    /**
+    * Метод производит поиск по базе данных с учетом вкусовых предпочтений пользователя
+    * @return номер самой подходящей по вкусам диеты
+     **/
+    public static long generateDiet(Context context) {
+        UserData user = UserData.readPref(context);
+        long idDiet = 0;
+        String taste = user.getTastePreferences();
+        String[] arrTaste = taste.split("(\\s|\n|,|\\.)");
+        for (int i=0;i < arrTaste.length ;i++){
+            arrTaste[i] = arrTaste[i].substring(0,1).toUpperCase(new Locale("ru","RU")) +arrTaste[i].substring(1);
+        }
+        //ищем совпадения по продуктам в БД(без последних двух симоволов(окончания))
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < arrTaste.length; i++) {
+            arrTaste[i] = arrTaste[i].trim();
+            if (!arrTaste[i].matches(" *") && (arrTaste[i].length()>1)) {
+                if(arrTaste[i].length() > 2) {
+                    arrTaste[i] = arrTaste[i].substring(0, arrTaste[i].length() - 1);
+                }
+                sb.append("or name like '" + arrTaste[i] + "%' ");
+            }
+        }
+        String where = sb.substring(2);
+        String query = "";
+        DietDB db = DietDB.openDB(context);
+        Cursor c = db.getReadableDatabase().query(true,DietDB.TABLE_PRODUCT,new String[]{"id","name","protein","fat","carbohydrate","img"}
+                ,where,null,null,null,null,"10");
+        if(c.moveToFirst()) {
+            String productsName="";
+            do{
+                productsName += "or nutrition.id_product=" + c.getString(0)+" ";
+            }while(c.moveToNext());
+            productsName = productsName.substring(2);
+            //ищем диету с максимальным приемом данных продуктов(в сумме)
+
+            query = " select diet.id,diet.name, count(*) " +
+                    " from diet inner join menu on diet.id = menu.id_diet " +
+                    " inner join nutrition on menu.id = nutrition.id_menu " +
+                    " where " + productsName +
+                    " group by diet.id " +
+                    " order by count(*) desc ";
+            c.close();
+            c = db.database.rawQuery(query,null);
+            if(c.moveToFirst()){
+                idDiet = c.getInt(0);
+            }
+            c.close();
+        }
+        db.close();
+        return idDiet;
+    }
+
     private static ArrayList<Diet> getDietList(Context context,long id,String query, String orderBy){
 
         ArrayList<Diet> diets = new ArrayList<Diet>();
         DietDB dbHelper = DietDB.openDB(context);
         if (dbHelper.database == null){
-            Toast.makeText(context,"Нет подключения к БД",Toast.LENGTH_SHORT).show();
+            Toast.makeText(context,context.getString(R.string.errorDB),Toast.LENGTH_SHORT).show();
             return null;
         }
         String selection = null;
@@ -200,7 +247,7 @@ public class Diet {
                 diets.add(diet);
             } while (c.moveToNext());
         } else {
-            Diet emptyDiet = new Diet("Диеты не найдены",0,null);
+            Diet emptyDiet = new Diet(context.getString(R.string.listDietsNotFound),0,null);
             diets.add(emptyDiet);
         }
         c.close();
@@ -208,63 +255,4 @@ public class Diet {
         return diets;
     }
 
-    /*
-    * Метод производит поиск по базе данных с учетом вкусовых предпочтений пользователя
-    * @return номер самой подходящей по вкусам диеты
-     */
-    public static long generateDiet(Context context) {
-        UserData user = UserData.readPref(context);
-        long idDiet = 0;
-        String nameDiet = "";
-        String taste = user.getTastePreferences();
-        Log.d("generateDiet","taste = " + taste);
-        String[] arrTaste = taste.split("(\\s|\n|,|\\.)");
-        for (int i=0;i < arrTaste.length ;i++){
-            arrTaste[i] = arrTaste[i].substring(0,1).toUpperCase(new Locale("ru","RU")) +arrTaste[i].substring(1);
-            Log.d("generateDiet","arrTaste["+i+"] = " + arrTaste[i] );// arrTaste[i]);
-        }
-        //ищем совпадения по продуктам в БД(без последних двух симоволов(окончания))
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < arrTaste.length; i++) {
-            arrTaste[i] = arrTaste[i].trim();
-            if (!arrTaste[i].matches(" *") && (arrTaste[i].length()>1)) {//empty string are ""; " "; "  "; and so on
-                if(arrTaste[i].length() > 2) {
-                    arrTaste[i] = arrTaste[i].substring(0, arrTaste[i].length() - 1);
-                }
-                sb.append("or name like '" + arrTaste[i] + "%' ");
-            }
-        }
-        String where = sb.substring(2);
-        String query = SQLiteQueryBuilder.buildQueryString(true,DietDB.TABLE_PRODUCT,new String[]{"id","name","protein","fat","carbohydrate","img"}
-                ,where,null,null,null,null);
-        Log.d("generateDiet","sql = " + query);
-        DietDB db = DietDB.openDB(context);
-        Cursor c = db.getReadableDatabase().query(true,DietDB.TABLE_PRODUCT,new String[]{"id","name","protein","fat","carbohydrate","img"}
-                ,where,null,null,null,null,"10");//db.database.rawQuery(query,null); //db.database.query(true,Product.TABLE_NAME,new String[]{"id","name"},"name regexp ?",new String[]{"'"+sb.toString()+"'"},null,null,null,null);
-        if(c.moveToFirst()) {
-            String productsName="";
-            Log.d("generateDiet","count product = " + c.getCount());
-            do{
-                productsName += "or nutrition.id_product=" + c.getString(0)+" ";
-            }while(c.moveToNext());
-            productsName = productsName.substring(2);
-            Log.d("generateDiet","ids product = " + productsName);
-            //ищем диету с максимальным приемом данных продуктов(в сумме)
-
-            query = " select diet.id,diet.name, count(*) " +
-                    " from diet inner join menu on diet.id = menu.id_diet " +
-                    " inner join nutrition on menu.id = nutrition.id_menu " +
-                    " where " + productsName +
-                    " group by diet.id " +
-                    " order by count(*) desc ";
-            Log.d("generateDiet","rating diets = " + query);
-            c = db.database.rawQuery(query,null);
-            if(c.moveToFirst()){
-                idDiet = c.getInt(0);
-                nameDiet = c.getString(1);
-            }
-        }
-        db.close();
-        return idDiet;
-    }
 }
