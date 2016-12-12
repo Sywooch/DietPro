@@ -53,7 +53,7 @@ public class ProductAdapter extends BaseAdapter {
         TextView textView = (TextView) view.findViewById(R.id.textViewItem);
         textView.setText(product.getName());
         TextView textViewSub = (TextView) view.findViewById(R.id.textViewItemSub);
-        textViewSub.setText(String.format(view.getResources().getString(R.string.productCalories),(int)product.getCalories()));
+        textViewSub.setText(String.format(view.getResources().getString(R.string.productCalories),(int)product.getCalories(Double.valueOf(1))));
         ImageView productImg = (ImageView) view.findViewById(R.id.productImg);
         if (product.getUrl() != null) {
             if (!product.getUrl().equals("") && product.getUrl() != null) {

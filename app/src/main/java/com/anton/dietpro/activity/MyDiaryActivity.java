@@ -45,9 +45,11 @@ public class MyDiaryActivity extends AppCompatActivity implements View.OnTouchLi
         }
         setContentView(R.layout.activity_my_diary);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle(getString(R.string.title_activity_my_diary) + ": " + Diet.getDietById(Diet.getCurrentDietId(this),this).getName() );
         }
 
         String formattedDate = getDate(1);

@@ -177,6 +177,9 @@ public class DietActivity extends AppCompatActivity {
         Diet.setCurrentDietId(getApplicationContext(), Integer.valueOf(dietId));
         Diet.setCurrentDietDate(getApplicationContext(), date);
         super.onActivityResult(requestCode, resultCode, data);
+        Intent intent = new Intent(getApplicationContext(),MyDiaryActivity.class);
+        startActivity(intent);
+
     }
 
     private void doSearch(String query) {

@@ -159,6 +159,11 @@ public class Diet {
         UserData user = UserData.readPref(context);
         long idDiet = 0;
         String taste = user.getTastePreferences();
+        taste = taste.trim();
+        if (taste.length()<2){
+            return 0;
+        }
+
         String[] arrTaste = taste.split("(\\s|\n|,|\\.)");
         for (int i=0;i < arrTaste.length ;i++){
             arrTaste[i] = arrTaste[i].substring(0,1).toUpperCase(new Locale("ru","RU")) +arrTaste[i].substring(1);

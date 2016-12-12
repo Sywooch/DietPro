@@ -107,6 +107,9 @@ public class NutritionAdapter extends BaseAdapter {
                         Toast.makeText(view.getContext(), view.getResources().getString(R.string.canceled), Toast.LENGTH_LONG).show();
                     }
                 }
+
+                View parent = (View)view.getParent().getParent().getParent().getParent().getParent();
+                updateAmountCall(parent,nutrition.getDay());
             }
         });
         ingestionComplete.setOnClickListener(new View.OnClickListener() {
@@ -150,9 +153,22 @@ public class NutritionAdapter extends BaseAdapter {
                 else{
                     Toast.makeText(viewParent.getContext(), view.getResources().getString(R.string.listProductsNotFound), Toast.LENGTH_SHORT).show();
                 }
+                View parent = (View)view.getParent().getParent().getParent();
+                updateAmountCall(parent,nutrition.getDay());
             }
         });
         return view;
+    }
+
+    private void updateAmountCall(View parent, long day) {
+        if(parent != null){
+            TextView headerDayCallories = (TextView) parent.findViewById(R.id.headerDayCallories);
+            if(headerDayCallories != null) {
+                headerDayCallories.setText(String.format(parent.getResources().getString(R.string.headerDayCallories)
+                        , Diary.getCurrentCallories(day, parent.getContext())
+                        , Nutrition.getAmountCallories(day, parent.getContext())));
+            }
+        }
     }
 
     private Nutrition getNutrition(int position){
