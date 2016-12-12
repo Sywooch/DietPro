@@ -12,7 +12,9 @@ import android.support.annotation.RequiresApi;
 
 import com.anton.dietpro.R;
 import com.anton.dietpro.activity.MainActivity;
+import com.anton.dietpro.models.Nutrition;
 
+import java.sql.Date;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -38,15 +40,25 @@ public class MyService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 //        TODO реализовать проверку в БД на наличие ближайших(через 15-25 минут) приемов пищи
-        for(int i =0 ;i<2 ;i++) {
+        run();
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    private void run() {
             try {
-                TimeUnit.SECONDS.sleep(1);
+
+                Nutrition nutrition = Nutrition.getNutritionByTime(new Date(System.currentTimeMillis() + (( 60 * 1000)*15)),getApplicationContext());
+                if (nutrition != null) {
+                    sendNotif();
+                }
+
+                TimeUnit.MINUTES.sleep(5);
+                startService(new Intent(getApplicationContext(),MyService.class));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            sendNotif();
-        }
-        return super.onStartCommand(intent, flags, startId);
+
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -54,7 +66,6 @@ public class MyService extends Service {
     private void sendNotif() {
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra(MainActivity.TEST_STRING, "somefile");
         PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
         Notification.Builder builder = new Notification.Builder(this);

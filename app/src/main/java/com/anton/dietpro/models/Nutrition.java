@@ -3,8 +3,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
 import android.widget.Toast;
+
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimeZone;
 
 /**
  * Created by admin on 18.11.16.
@@ -18,11 +22,11 @@ public class Nutrition {
     private Integer day;
     private String Name;
     private List<Product> products;
+    private Date datetime;
 
 
     public Nutrition() {
     }
-
 
     public Integer getId() {
         return id;
@@ -56,6 +60,14 @@ public class Nutrition {
         this.day = day;
     }
 
+    public Date getDatetime() {
+        return datetime;
+    }
+
+    public void setDatetime(Date datetime) {
+        this.datetime = datetime;
+    }
+
     public Double getAmountKkal() {
         Double amountKkal = 0.0;
         for (Integer i = 0; i<this.products.size() ; i++){
@@ -78,10 +90,7 @@ public class Nutrition {
         try {
             ArrayList<Product> products = new ArrayList<>();
             Integer idDiet = Diet.getCurrentDietId(context);
-            Nutrition nutrition = new Nutrition();
-            DietDB dbHelper = new DietDB(context);
-            dbHelper.create_db();
-            dbHelper.open();
+            DietDB dbHelper = DietDB.openDB(context);
             if (dbHelper.database == null) {
                 Toast.makeText(context, "Нет подключения к БД", Toast.LENGTH_SHORT).show();
                 return null;
@@ -103,7 +112,6 @@ public class Nutrition {
                     + " where " + Nutrition.TABLE_MENU_NAME + ".id_diet = " + idDiet
                     + " and " + Nutrition.TABLE_MENU_NAME + ".day = " + day
                     + " and " + Nutrition.TABLE_MENU_NAME + ".id_ingestion = " + idIngestion;
-            Log.d("SQL",query);
             Cursor c = dbHelper.database.rawQuery(query, null);
             if (c.moveToFirst()) {
                 int nutritionIdColIndex = c.getColumnIndex("nutrition_id");
@@ -155,43 +163,7 @@ public class Nutrition {
         if (nutrition_id < 1){
             return null;
         }
-        Integer idDiet = Diet.getCurrentDietId(context);
-        Nutrition nutrition = new Nutrition();
-        DietDB dbHelper = new DietDB(context);
-        dbHelper.create_db();
-        dbHelper.open();
-        if (dbHelper.database == null){
-            Toast.makeText(context,"Нет подключения к БД",Toast.LENGTH_SHORT).show();
-            return null;
-        }
-        Cursor c = dbHelper.database.rawQuery("select "
-                        + Nutrition.TABLE_MENU_NAME + ".id as id ,"
-                        + Nutrition.TABLE_MENU_NAME + ".day as day ,"
-                        + Nutrition.TABLE_INGESTION_NAME + ".name as ingestion_name "
-                        + " from "
-                        + Nutrition.TABLE_MENU_NAME
-                        + " inner join " + Nutrition.TABLE_INGESTION_NAME
-                        + " on " + Nutrition.TABLE_MENU_NAME + ".id_ingestion = " + Nutrition.TABLE_INGESTION_NAME + ".id "
-                        + " inner join " + Nutrition.TABLE_NUTRITION_NAME
-                        + " on " + Nutrition.TABLE_MENU_NAME + ".id = " + Nutrition.TABLE_NUTRITION_NAME + ".id_menu "
-                        + " where " + Nutrition.TABLE_MENU_NAME + ".id_diet = " + idDiet
-                        + " and " + Nutrition.TABLE_NUTRITION_NAME + ".id = " + nutrition_id
-                ,null);
-
-        if (c.moveToFirst()) {
-            int idColIndex = c.getColumnIndex("id");
-            int nameColIndex = c.getColumnIndex("ingestion_name");
-            int dayColIndex = c.getColumnIndex("day");
-            nutrition.setId(Integer.valueOf(c.getString(idColIndex)));
-            nutrition.setName(c.getString(nameColIndex));
-            nutrition.setDay(Integer.valueOf(c.getString(dayColIndex)));
-            List<Product> products = new ArrayList<>();
-            nutrition.setProducts(products);
-
-        }
-        c.close();
-        dbHelper.close();
-        return nutrition;
+       return getNutritionList(0, 1, 0, null, context).get(0);
     }
     /**
     * Получает информацию о приеме пищи в текущий день, по выбранной диете
@@ -205,54 +177,51 @@ public class Nutrition {
     *
      * **/
     public static Nutrition getNutritionById(long day, long idIngestion, Context context){
-        Integer idDiet = Diet.getCurrentDietId(context);
-        Nutrition nutrition = new Nutrition();
-        DietDB dbHelper = new DietDB(context);
-        dbHelper.create_db();
-        dbHelper.open();
-        if (dbHelper.database == null){
-            Toast.makeText(context,"Нет подключения к БД",Toast.LENGTH_SHORT).show();
-            return null;
-        }
-        Cursor c = dbHelper.database.rawQuery("select "
-                + Nutrition.TABLE_MENU_NAME + ".id as id ,"
-                + Nutrition.TABLE_MENU_NAME + ".day as day ,"
-                + Nutrition.TABLE_INGESTION_NAME + ".name as ingestion_name "
-                + " from "
-                + Nutrition.TABLE_MENU_NAME
-                + " inner join " + Nutrition.TABLE_INGESTION_NAME
-                + " on " + Nutrition.TABLE_MENU_NAME + ".id_ingestion = " + Nutrition.TABLE_INGESTION_NAME + ".id "
-                + " where " + Nutrition.TABLE_MENU_NAME + ".id_diet = " + idDiet
-                + " and " + Nutrition.TABLE_MENU_NAME + ".day = " + day
-                + " and " + Nutrition.TABLE_INGESTION_NAME + ".id = " + idIngestion
-                ,null);
-
-        if (c.moveToFirst()) {
-            int idColIndex = c.getColumnIndex("id");
-            int nameColIndex = c.getColumnIndex("ingestion_name");
-            int dayColIndex = c.getColumnIndex("day");
-            nutrition.setId(Integer.valueOf(c.getString(idColIndex)));
-            nutrition.setName(c.getString(nameColIndex));
-            nutrition.setDay(Integer.valueOf(c.getString(dayColIndex)));
-            List<Product> products = new ArrayList<>();
-            nutrition.setProducts(products);
-
-        }
-        c.close();
-        dbHelper.close();
-        return nutrition;
+        ArrayList<Nutrition> arr = getNutritionList(0,day,idIngestion,null,context);
+        return arr.size()>0?arr.get(0):null;
     }
 
     public static ArrayList<Nutrition> getNutritionsByDay(long day, Context context) {
+        return getNutritionList(0, day, 0, null, context);
+    }
+
+
+    public static Nutrition getNutritionByTime(Date date,Context context){
+            ArrayList<Nutrition> arr = getNutritionList(0,0,0,date,context);
+        return arr.size()>0?arr.get(0):null;
+
+    }
+
+    private static ArrayList<Nutrition> getNutritionList(long id, long day, long idIngestion,Date date, Context context){
+
         Integer idDiet = Diet.getCurrentDietId(context);
         ArrayList<Nutrition> nutritions = new ArrayList<>();
-        DietDB dbHelper = new DietDB(context);
-        dbHelper.create_db();
-        dbHelper.open();
+        DietDB dbHelper = DietDB.openDB(context);
         if (dbHelper.database == null){
             Toast.makeText(context,"Нет подключения к БД",Toast.LENGTH_SHORT).show();
             return null;
         }
+        String where = "";
+        if (day>0){
+           where =  " and " + Nutrition.TABLE_MENU_NAME + ".day = " + day;
+        }
+        if(day>0 && idIngestion>0){
+            where = " and " + Nutrition.TABLE_MENU_NAME + ".day = " + day
+                    + " and " + Nutrition.TABLE_INGESTION_NAME + ".id = " + idIngestion;
+        }
+        if (id>0){
+            where = " and " + Nutrition.TABLE_NUTRITION_NAME + ".id = " + id;
+
+        }
+        if (date!=null){
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            df.setTimeZone(TimeZone.getTimeZone("Europe/Moscow"));
+
+            where = " and time(" + Nutrition.TABLE_MENU_NAME + ".datetime) between time('now','+0 minutes','localtime') and time('"
+                    + df.format(date)
+                    +"','+0 minutes','localtime') ";
+        }
+
         String query = "select "
                 + Nutrition.TABLE_MENU_NAME + ".id as id ,"
                 + Nutrition.TABLE_MENU_NAME + ".day as day ,"
@@ -263,11 +232,10 @@ public class Nutrition {
                 + " inner join " + Nutrition.TABLE_INGESTION_NAME
                 + " on " + Nutrition.TABLE_MENU_NAME + ".id_ingestion = " + Nutrition.TABLE_INGESTION_NAME + ".id "
                 + " where " + Nutrition.TABLE_MENU_NAME + ".id_diet = " + idDiet
-                + " and " + Nutrition.TABLE_MENU_NAME + ".day = " + day;
+                + where;
         Log.d("SQL",query);
         Cursor c = dbHelper.database.rawQuery(query
                 ,null);
-
         if (c.moveToFirst()) {
             int idColIndex = c.getColumnIndex("id");
             int nameColIndex = c.getColumnIndex("ingestion_name");
@@ -288,5 +256,6 @@ public class Nutrition {
         dbHelper.close();
         return nutritions;
     }
+
 
 }
