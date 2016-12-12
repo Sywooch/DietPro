@@ -5,6 +5,11 @@ import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.widget.ListView;
 
+/*
+*Класс наследник от ListView
+* Используется внутри другого ListView
+* Изменяет размер ListView в зависимости от количества элементов(на стандартном не работало)
+ */
 public class ExpandedListView extends ListView {
     private android.view.ViewGroup.LayoutParams params;
 

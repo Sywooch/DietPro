@@ -16,7 +16,7 @@
         android:focusable="false"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
-        android:background="@color/colorPrimary"
+        android:background="@drawable/nutrition_complete"
         android:textColor="@color/colorWhite"
         android:padding="10dp"
         android:layout_alignParentEnd="true"

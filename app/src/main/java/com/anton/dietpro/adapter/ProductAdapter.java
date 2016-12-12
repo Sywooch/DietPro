@@ -25,37 +25,35 @@ public class ProductAdapter extends BaseAdapter {
 
     public ProductAdapter(Context contex, List<Product> list) {
         this.list = list;
-        layoutInflater = (LayoutInflater) contex.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.layoutInflater = (LayoutInflater) contex.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
     public int getCount() {
-        return list.size();
+        return this.list.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return list.get(position);
+        return this.list.get(position);
     }
 
     @Override
     public long getItemId(int position) {
-        return list.get(position).getId();
+        return this.list.get(position).getId();
     }
 
     @Override
     public View getView(int position, final View convertView, ViewGroup parent) {
         View view = convertView;
         if (view == null){
-            view = layoutInflater.inflate(R.layout.item_layout,parent,false);
+            view = this.layoutInflater.inflate(R.layout.item_layout,parent,false);
         }
         Product product = getProduct(position);
         TextView textView = (TextView) view.findViewById(R.id.textViewItem);
         textView.setText(product.getName());
         TextView textViewSub = (TextView) view.findViewById(R.id.textViewItemSub);
-        textViewSub.setText(product.getPfc().getCalories() + " ккал.");
-
-
+        textViewSub.setText(String.format(view.getResources().getString(R.string.productCalories),(int)product.getCalories()));
         ImageView productImg = (ImageView) view.findViewById(R.id.productImg);
         if (product.getUrl() != null) {
             if (!product.getUrl().equals("") && product.getUrl() != null) {

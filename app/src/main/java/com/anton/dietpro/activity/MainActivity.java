@@ -52,8 +52,10 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        db = new DietDB(this);
-        db.create_db();
+        //TODO сделать ассинхронное создание БД. Во время создания показывать анимацию загрузки
+        //setContentView(R.layout.activity_wait);
+        this.db = new DietDB(this);
+        this.db.create_db();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -62,18 +64,6 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         startService(new Intent(this, MyService.class));
-
-
-    }
-
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
     }
 
     @Override
@@ -82,25 +72,12 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        return super.onOptionsItemSelected(item);
-    }
-
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    public void showCalc(View view)
-    {
-        stopService(new Intent(this, MyService.class));
-        Intent intent = new Intent(this,CalcActivity.class);
-        startActivity(intent);
     }
 
     public void showMyData(MenuItem item){
@@ -114,17 +91,21 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void showCalc(MenuItem item){
-        Intent intent = new Intent(this,CalcActivity.class);
-        startActivity(intent);
+        showCalc(item.getActionView());
     }
 
     public void showDiet(MenuItem item){
-        Intent intent = new Intent(this,DietActivity.class);
-        startActivity(intent);
+        showDiet(item.getActionView());
     }
 
     public void showProduct(MenuItem item){
-        Intent intent = new Intent(this,ProductActivity.class);
+        showProduct(item.getActionView());
+    }
+
+    public void showCalc(View v)
+    {
+        stopService(new Intent(this, MyService.class));
+        Intent intent = new Intent(this,CalcActivity.class);
         startActivity(intent);
     }
 

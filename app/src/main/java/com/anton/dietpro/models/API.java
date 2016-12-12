@@ -38,7 +38,7 @@ public class API {
             return response;
         }
         catch (Exception e){}
-        return "";//пусто
+        return text;//пусто
     }
 
     class MyRetroTask extends AsyncTask<String,String,String>{

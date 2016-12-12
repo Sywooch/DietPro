@@ -23,6 +23,7 @@ import com.anton.dietpro.models.Diet;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.StringTokenizer;
 import java.util.TimeZone;
 import android.support.v4.view.MenuItemCompat.OnActionExpandListener;
 
@@ -44,13 +45,11 @@ public class DietActivity extends AppCompatActivity {
         if (getSupportActionBar() != null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-
         Intent intent = getIntent();
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
             Toast.makeText(this, query, Toast.LENGTH_SHORT).show();
             doSearch(query);
-            //doMySearch(query);
         }else {
             ArrayList<Diet> diets = Diet.getDietList(getApplicationContext());
             DietAdapter adapterDiet = new DietAdapter(this, diets);
@@ -60,18 +59,11 @@ public class DietActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getApplicationContext(),DietDetailsActivity.class);
-                intent.putExtra("dietId",id + "");
+                intent.putExtra("dietId", String.valueOf(id));
                 startActivityForResult(intent,1);
             }
         });
 
-
-    }
-
-    private void doSearch(String query) {
-        ArrayList<Diet> diets = Diet.getSearchDietList(getApplicationContext(),query);
-        DietAdapter adapter = new DietAdapter(this,diets);
-        listView.setAdapter(adapter);
 
     }
 
@@ -90,30 +82,10 @@ public class DietActivity extends AppCompatActivity {
         return super.onPrepareOptionsMenu(menu);
     }
 
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (data == null) {return;}
-        String dietId = data.getStringExtra("dietId");
-
-        Date date = new Date();
-        java.text.DateFormat dateFormat = DateFormat.getDateFormat(getApplicationContext());
-        dateFormat.setTimeZone(TimeZone.getTimeZone("Europe/Moscow"));
-        //очищаем график приемов пищи по текущей диете
-        Diet.clearInfoDiet(getApplicationContext());
-        //сохраняем ИД выбранной диеты в преференцес( но мб переделаем на БД )
-        Diet.setCurrentDietId(getApplicationContext(), Integer.valueOf(dietId));
-        Diet.setCurrentDietDate(getApplicationContext(), date);
-        Toast.makeText(this, "Вы сели на диету " + dietId, Toast.LENGTH_SHORT).show();
-        Toast.makeText(this, "Дата " + dateFormat.format(date), Toast.LENGTH_SHORT).show();
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main, menu);
-        final Menu myMenu = menu;
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
@@ -191,6 +163,27 @@ public class DietActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (data == null) {return;}
+        String dietId = data.getStringExtra("dietId");
 
+        Date date = new Date();
+        java.text.DateFormat dateFormat = DateFormat.getDateFormat(getApplicationContext());
+        dateFormat.setTimeZone(TimeZone.getTimeZone("Europe/Moscow"));
+        //очищаем график приемов пищи по текущей диете
+        Diet.clearInfoDiet(getApplicationContext());
+        //сохраняем ИД выбранной диеты в преференцес( но мб переделаем на БД )
+        Diet.setCurrentDietId(getApplicationContext(), Integer.valueOf(dietId));
+        Diet.setCurrentDietDate(getApplicationContext(), date);
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void doSearch(String query) {
+        ArrayList<Diet> diets = Diet.getSearchDietList(getApplicationContext(),query);
+        DietAdapter adapter = new DietAdapter(this,diets);
+        listView.setAdapter(adapter);
+
+    }
 
 }

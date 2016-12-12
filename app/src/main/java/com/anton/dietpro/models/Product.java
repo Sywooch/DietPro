@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.anton.dietpro.R;
 import com.anton.dietpro.models.PFC;
 
 import java.util.ArrayList;
@@ -26,16 +27,11 @@ public class Product {
     private Integer nutritionId;
 
     public Product() {
-        this.id = 0;
-        this.nutritionId = 0;
-        this.pfc = new PFC();
+        setInit();
     }
 
     public Product(String name) {
-
-        this.id = 0;
-        this.nutritionId = 0;
-        this.pfc = new PFC();
+        setInit();
         this.name = name;
     }
 
@@ -87,7 +83,7 @@ public class Product {
     }
 
     public Integer getNutritionId() {
-        return nutritionId;
+        return this.nutritionId;
     }
 
     public void setNutritionId(Integer nutritionId) {
@@ -101,7 +97,8 @@ public class Product {
      */
     public double getCalories()
     {
-        return (this.weight/100) * pfc.getCalories();
+
+        return this.pfc!=null?(this.weight/100) * this.pfc.getCalories():0;
     }
 
     /**
@@ -111,31 +108,40 @@ public class Product {
      */
     public double getCalories(Double weight) {
         this.setWeight(weight);
-        return this.weight * pfc.getCalories();
+        return this.weight * this.pfc.getCalories();
     }
 
     public static ArrayList<Product> getProductList(Context context){
-        return getProductList(context,0,null,null);
+        return Product.getProductList(context,0,null,null);
     }
 
     public static Product getProductById(long id, Context context){
-        return getProductList(context,id,null,null).get(0);
+        return Product.getProductList(context,id,null,null).get(0);
     }
 
 
     public static ArrayList<Product> getSearchProductList(Context context, String query) {
-        return getProductList(context,0,query,null);
+        return Product.getProductList(context,0,query,null);
     }
 
     public static ArrayList<Product> getDietListSorted(Context applicationContext, boolean orderBy) {
-        return orderBy?getProductList(applicationContext,0,null,"name asc"):getProductList(applicationContext,0,null,"name desc");
+        return orderBy?Product.getProductList(applicationContext,0,null,"name asc"):Product.getProductList(applicationContext,0,null,"name desc");
+    }
+
+    private void setInit() {
+        this.id = 0;
+        this.nutritionId = 0;
+        this.pfc = new PFC();
+        this.description = "";
+        this.name = "";
+        this.weight = new Double(0);
     }
 
     private static ArrayList<Product> getProductList(Context context, long id, String query, String orderBy) {
         ArrayList<Product> products = new ArrayList<>();
         DietDB dbHelper = DietDB.openDB(context);
         if (dbHelper.database == null){
-            Toast.makeText(context,"Нет подключения к БД",Toast.LENGTH_SHORT).show();
+            Toast.makeText(context,context.getString(R.string.errorDB),Toast.LENGTH_SHORT).show();
             return null;
         }
 
@@ -164,7 +170,6 @@ public class Product {
             int fatColIndex = c.getColumnIndex("fat");
             int carbohydrateColIndex = c.getColumnIndex("carbohydrate");
             int urlColIndex = c.getColumnIndex("img");
-
             do {
                 Product product = new Product();
                 product.setId(Integer.valueOf(c.getString(idColIndex)));
@@ -175,7 +180,7 @@ public class Product {
                 products.add(product);
             } while (c.moveToNext());
         } else {
-            Product emptyProduct = new Product("Продукты не найдены");
+            Product emptyProduct = new Product(context.getString(R.string.listProductsNotFound));
             products.add(emptyProduct);
         }
         c.close();

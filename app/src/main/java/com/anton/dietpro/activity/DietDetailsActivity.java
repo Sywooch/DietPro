@@ -42,14 +42,14 @@ public class DietDetailsActivity extends AppCompatActivity {
             this.initView(dietId);
         }
         else {
-            Toast.makeText(this, "Произошла ошибка. Диета не найдена", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.listDietsNotFound), Toast.LENGTH_SHORT).show();
         }
 
     }
 
     private void initView(long id){
         if (id == 0){
-            dietName.setText("Диета не найдена");
+            dietName.setText(getString(R.string.listDietsNotFound));
             dietLength.setText("");
             dietDescription.setText("");
             ((Button)findViewById(R.id.acceptDiet)).setVisibility(View.GONE);
@@ -57,7 +57,7 @@ public class DietDetailsActivity extends AppCompatActivity {
         else{
             Diet diet = Diet.getDietById(id, getApplicationContext());
             dietName.setText(diet.getName());
-            dietLength.setText("Подолжительность " + diet.getLength() + "дней.");
+            dietLength.setText(String.format(getString(R.string.lengthDiet),diet.getLength()));
             dietDescription.setText(Html.fromHtml(diet.getDescription()));
         }
     }

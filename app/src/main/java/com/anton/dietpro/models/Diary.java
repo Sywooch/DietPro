@@ -6,9 +6,11 @@ import android.database.Cursor;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.anton.dietpro.R;
 import com.anton.dietpro.activity.DietActivity;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -80,17 +82,14 @@ public class Diary {
         dbHelper.create_db();
         dbHelper.open();
         if (dbHelper.database == null){
-            Toast.makeText(context,"Нет подключения к БД",Toast.LENGTH_SHORT).show();
+            Toast.makeText(context,context.getString(R.string.errorDB),Toast.LENGTH_SHORT).show();
             return false;
         }
         ContentValues cv = new ContentValues();
         cv.put("id_nutrition", nutrition_id);
         cv.put("complete", true);
         cv.put("active", true);
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        df.setTimeZone(TimeZone.getTimeZone("Europe/Moscow"));
-
-        cv.put("datetime", df.format(new Date()));
+        cv.put("datetime", SimpleDate.getString(new Date()));
         dbHelper.database.beginTransaction();
         long rowID = dbHelper.database.insert(Diary.TABLE_DIARY_NAME, null,cv);
         dbHelper.database.setTransactionSuccessful();
@@ -108,17 +107,13 @@ public class Diary {
         if (nutrition_id<1){
             return false;
         }
-        Integer idDiet = Diet.getCurrentDietId(context);
-        DietDB dbHelper = new DietDB(context);
-        dbHelper.create_db();
-        dbHelper.open();
+        DietDB dbHelper = DietDB.openDB(context);
         if (dbHelper.database == null){
-            Toast.makeText(context,"Нет подключения к БД",Toast.LENGTH_SHORT).show();
+            Toast.makeText(context,context.getString(R.string.errorDB),Toast.LENGTH_SHORT).show();
             return false;
         }
         dbHelper.database.beginTransaction();
-        int count = dbHelper.database.delete(Diary.TABLE_DIARY_NAME, "id_nutrition = " + nutrition_id,null);
-        Log.d("SQL",Diary.TABLE_DIARY_NAME+  "; id_nutrition = " + nutrition_id);
+        int count = dbHelper.database.delete(Diary.TABLE_DIARY_NAME, "id_nutrition = ?" ,new String[]{String.valueOf(nutrition_id)});
         dbHelper.database.setTransactionSuccessful();
         dbHelper.database.endTransaction();
         dbHelper.close();
@@ -133,7 +128,7 @@ public class Diary {
         dbHelper.create_db();
         dbHelper.open();
         if (dbHelper.database == null){
-            Toast.makeText(context,"Нет подключения к БД",Toast.LENGTH_SHORT).show();
+            Toast.makeText(context,context.getString(R.string.errorDB),Toast.LENGTH_SHORT).show();
             return;
         }
         Cursor c = dbHelper.database.rawQuery("select id,id_nutrition,datetime,complete,active from " + Diary.TABLE_DIARY_NAME,null);
@@ -145,7 +140,6 @@ public class Diary {
             int activeColIndex = c.getColumnIndex("active");
 
             do {
-
                 Log.d("SQL_TEST",
                  "row -- id:"+c.getInt(idColIndex)
                 + " id_nutrition:"+c.getInt(idNutritionColIndex)
@@ -166,13 +160,15 @@ public class Diary {
         dbHelper.create_db();
         dbHelper.open();
         if (dbHelper.database == null){
-            Toast.makeText(context,"Нет подключения к БД",Toast.LENGTH_SHORT).show();
+            Toast.makeText(context,context.getString(R.string.errorDB),Toast.LENGTH_SHORT).show();
             return false;
         }
-        Cursor c = dbHelper.database.rawQuery("select id from " + Diary.TABLE_DIARY_NAME + " where id_nutrition = " + nutritionId + "" +
+        String query = "select id from " + Diary.TABLE_DIARY_NAME + " where id_nutrition = " + nutritionId + "" +
                 " and complete = 1" +
                 " and active = 1" +
-                " limit 1",null);
+                " limit 1";
+        Log.d("INGESTION2",query);
+        Cursor c = dbHelper.database.rawQuery(query,null);
         if (c.moveToFirst()) {
             if (c.getInt(c.getColumnIndex("id")) > 0 ) {
                 dbHelper.close();
@@ -188,25 +184,24 @@ public class Diary {
         if (itemId <1 ){
             return false;
         }
-        DietDB dbHelper = new DietDB(context);
-        dbHelper.create_db();
-        dbHelper.open();
+        DietDB dbHelper = DietDB.openDB(context);
         if (dbHelper.database == null){
-            Toast.makeText(context,"Нет подключения к БД",Toast.LENGTH_SHORT).show();
+            Toast.makeText(context,context.getString(R.string.errorDB),Toast.LENGTH_SHORT).show();
             return false;
         }
         String query = "select count_plan as plan" +
                 ", count_fakt as fakt " +
                 " from (select count(*) as count_plan from nutrition where nutrition.id_menu = " + itemId + " ) as plan_table" +
                 ", (select count(*) as count_fakt from nutrition inner join diary on nutrition.id = diary.id_nutrition" +
-                " where nutrition.id_menu = " + itemId + " ) as fakt_table " +
+                " where nutrition.id_menu = " + itemId +
+                " and diary.complete = 1" +
+                " and diary.active = 1" + " ) as fakt_table " +
                 " limit 1";
-        Log.d("INGESTION2",query);
         Cursor c = dbHelper.database.rawQuery(query,null);
         if (c.moveToFirst()) {
             int planColIndex = c.getColumnIndex("plan");
             int faktColIndex = c.getColumnIndex("fakt");
-            if (c.getInt(planColIndex) == c.getInt(faktColIndex)){
+            if ((c.getInt(planColIndex) == c.getInt(faktColIndex)) && (c.getInt(planColIndex)>0) ){
                 c.close();
                 dbHelper.close();
                 return true;
@@ -215,5 +210,42 @@ public class Diary {
         c.close();
         dbHelper.close();
         return false;
+    }
+
+
+    public static int getCurrentCallories(long day, Context context) {
+        if (day < 1){
+            return 0;
+        }
+        DietDB dbHelper = DietDB.openDB(context);
+        if (dbHelper.database == null){
+            Toast.makeText(context,context.getString(R.string.errorDB),Toast.LENGTH_SHORT).show();
+            return 0;
+        }
+        double calories = 0;
+        ArrayList<Nutrition> nutritions = Nutrition.getNutritionsByDay(day,context);
+        for(int i = 0 ; i < nutritions.size() ; i++){
+            Cursor c = dbHelper.database.rawQuery("SELECT product.id,product.protein, product.fat, product.carbohydrate, nutrition.weight " +
+                    " from diary inner join nutrition on diary.id_nutrition = nutrition.id " +
+                    " inner join product on nutrition.id_product = product.id " +
+                    " where nutrition.id_menu = ?",new String[]{String.valueOf(nutritions.get(i).getId())});
+            if (c.moveToFirst()) {
+                int idColIndex = c.getColumnIndex("id");
+                int proteinColIndex = c.getColumnIndex("protein");
+                int fatColIndex = c.getColumnIndex("fat");
+                int carbohydrateColIndex = c.getColumnIndex("carbohydrate");
+                int weightColIndex = c.getColumnIndex("weight");
+                do {
+                    Product product = new Product();
+                    product.setId(c.getInt(idColIndex));
+                    product.setPfc(new PFC(c.getDouble(proteinColIndex),c.getDouble(fatColIndex),c.getDouble(carbohydrateColIndex)));
+                    product.setWeight(c.getDouble(weightColIndex));
+                    calories += product.getCalories();
+                }while(c.moveToNext());
+            }
+            c.close();
+        }
+        dbHelper.close();
+        return (int)calories;
     }
 }

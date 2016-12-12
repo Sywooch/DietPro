@@ -35,10 +35,9 @@ public class CalcActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-
-        editAge = ((EditText)findViewById(R.id.editText6));
-        editWeight = ((EditText)findViewById(R.id.editText5));
-        editHeight = ((EditText)findViewById(R.id.editText11));
+        editAge = ((EditText)findViewById(R.id.editTextAge));
+        editWeight = ((EditText)findViewById(R.id.editTextWeight));
+        editHeight = ((EditText)findViewById(R.id.editTextHeight));
         textResult = ((TextView)findViewById(R.id.textResult));
 
         tabHost = (TabHost) findViewById(R.id.tabHost);
@@ -72,39 +71,11 @@ public class CalcActivity extends AppCompatActivity {
         tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
 
             public void onTabChanged(String tabId) {
-                textResult.setText("");//Toast.makeText(getApplicationContext(), "tabId = " + tabId, Toast.LENGTH_SHORT).show();
+                textResult.setText("");
             }
         });
 
         readPreferences();
-    }
-
-    private void readPreferences() {
-
-        UserData user = UserData.readPref(getApplicationContext());
-        if (user != null) {
-            FrameLayout tabContent = (FrameLayout)((LinearLayout)tabHost.getChildAt(0)).getChildAt(1);// (FrameLayout)findViewById(R.id.tabcontent));
-            int n = tabContent.getChildCount();
-            //Toast.makeText(getApplicationContext(),"n="+n,Toast.LENGTH_LONG).show();
-
-
-            for(int i =0;i<n;i++) {
-                View v = tabContent.getChildAt(i);
-                if (user.getAge() > 0) {
-                    editAge = (EditText) v.findViewById(R.id.editText6);
-                    editAge.setText(String.valueOf(user.getAge()));
-                }
-                if (user.getWeight() > 0) {
-                    editWeight = ((EditText)v.findViewById(R.id.editText5));
-                    editWeight.setText(String.valueOf(user.getWeight()));
-                }
-                if (user.getHeight() > 0) {
-                    editHeight = ((EditText)v.findViewById(R.id.editText11));
-                    editHeight.setText(String.valueOf(user.getHeight()));
-                }
-            }
-
-        }
     }
 
     @Override
@@ -131,9 +102,9 @@ public class CalcActivity extends AppCompatActivity {
     {
         int id = v.getId();
         v = (View)v.getParent();
-        editAge = ((EditText)v.findViewById(R.id.editText6));
-        editWeight = ((EditText)v.findViewById(R.id.editText5));
-        editHeight = ((EditText)v.findViewById(R.id.editText11));
+        editAge = ((EditText)v.findViewById(R.id.editTextAge));
+        editWeight = ((EditText)v.findViewById(R.id.editTextWeight));
+        editHeight = ((EditText)v.findViewById(R.id.editTextHeight));
         saveData();
         String age = editAge.getText().toString();
         String weight = editWeight.getText().toString();
@@ -190,12 +161,23 @@ public class CalcActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onPause() {
+        saveData();
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
     private void saveData(){
         Integer myAge = 0;
         Float myWeight = 0f;
         Float myHeight = 0f;
 
-         UserData user = UserData.readPref(getApplicationContext());
+        UserData user = UserData.readPref(getApplicationContext());
         if (editAge.getText().length() > 0) {
             myAge = Integer.valueOf(editAge.getText().toString());
         }
@@ -211,14 +193,29 @@ public class CalcActivity extends AppCompatActivity {
         user.savePref(getApplicationContext());
     }
 
-    @Override
-    protected void onPause() {
-        saveData();
-        super.onPause();
+    private void readPreferences() {
+
+        UserData user = UserData.readPref(getApplicationContext());
+        if (user != null) {
+            FrameLayout tabContent = (FrameLayout)((LinearLayout)tabHost.getChildAt(0)).getChildAt(1);
+            int n = tabContent.getChildCount();
+            for(int i =0;i<n;i++) {
+                View v = tabContent.getChildAt(i);
+                if (user.getAge() > 0) {
+                    editAge = (EditText) v.findViewById(R.id.editTextAge);
+                    editAge.setText(String.valueOf(user.getAge()));
+                }
+                if (user.getWeight() > 0) {
+                    editWeight = ((EditText)v.findViewById(R.id.editTextWeight));
+                    editWeight.setText(String.valueOf(user.getWeight()));
+                }
+                if (user.getHeight() > 0) {
+                    editHeight = ((EditText)v.findViewById(R.id.editTextHeight));
+                    editHeight.setText(String.valueOf(user.getHeight()));
+                }
+            }
+
+        }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
 }

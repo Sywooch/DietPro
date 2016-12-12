@@ -69,5 +69,24 @@
     <string name="generate_diet">Подобрать</string>
     <string name="infoDiet">"%1$d дней.
         %2$.1f кг."</string>
+    <string name="headerDayCallories">Итого калорий: %1$d/%2$d.</string>
+    <string name="errorMessage">Ошибка. Попробуйте снова.</string>
+    <string name="canceled">Отменено.</string>
+    <string name="listProductsNotFound">Список продуктов не найден.</string>
+    <string name="errorDB">Нет подключения к БД</string>
+    <string name="beginDiet">Начало диеты.</string>
+    <string name="endDiet">Конец диеты.</string>
+    <string name="errorDontAcceptDiet">Вы не выбрали диету.</string>
+    <string name="listDietsNotFound">Диеты не найдены.</string>
+    <string name="productCalories">%d калл.</string>
+    <string name="lengthDiet">Подолжительность %d дней.</string>
+    <string name="errorDontAcceptSex">Не выбран пол.</string>
+    <string name="errorDontAcceptBodyType">Не выбран тип телосложения.</string>
+    <string name="successSaveData">Данные сохранены.</string>
+    <string name="productsNotFound">Продукт не найден.</string>
+    <string name="timeForEat">Пора кушать.</string>
+    <string name="tikerText">Тикер текст</string>
+    <string name="notificationTitle">DietPro Notification</string>
+    <string name="notificationText">%1$s в %2$s. Не забудьте поесть.</string>
 
 </resources>

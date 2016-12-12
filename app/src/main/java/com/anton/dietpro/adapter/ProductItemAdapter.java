@@ -1,7 +1,6 @@
 package com.anton.dietpro.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +10,7 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 import com.anton.dietpro.R;
 import com.anton.dietpro.models.Diary;
+import com.anton.dietpro.models.ExpandedListView;
 import com.anton.dietpro.models.Product;
 import com.squareup.picasso.Picasso;
 
@@ -26,7 +26,7 @@ public class ProductItemAdapter extends BaseAdapter {
 
     public ProductItemAdapter(Context contex, List<Product> list) {
         this.list = list;
-        layoutInflater = (LayoutInflater) contex.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.layoutInflater = (LayoutInflater) contex.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
@@ -35,26 +35,26 @@ public class ProductItemAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int position) {
-        return list.get(position);
+    public Product getItem(int position) {
+        return this.list.get(position);
     }
 
     @Override
     public long getItemId(int position) {
-        return list.get(position).getNutritionId();
+        return this.list.get(position).getNutritionId();
     }
 
     @Override
-    public View getView(int position, final View convertView, ViewGroup parent) {
+    public View getView(final int position, final View convertView, ViewGroup parent) {
         View view = convertView;
         if (view == null){
-            view = layoutInflater.inflate(R.layout.item_product_layout,parent,false);
+            view = this.layoutInflater.inflate(R.layout.item_product_layout,parent,false);
         }
-        Product product = getProduct(position);
+        final Product product = getProduct(position);
         TextView productName = (TextView) view.findViewById(R.id.productName);
         TextView amountKkal = (TextView) view.findViewById(R.id.amountKkal);
         ImageView productImg = (ImageView) view.findViewById(R.id.productImg);
-        ToggleButton productComplete = (ToggleButton) view.findViewById(R.id.productComplete);
+        final ToggleButton productComplete = (ToggleButton) view.findViewById(R.id.productComplete);
         if(Diary.isCompleteNutrition(view.getContext(), product.getNutritionId())){
             productComplete.setChecked(true);
         }
@@ -69,8 +69,20 @@ public class ProductItemAdapter extends BaseAdapter {
             }
         }
         productName.setText(product.getName());
-        String template = amountKkal.getText().toString();
-        amountKkal.setText(String.format(template,product.getWeight())); //product.getPfc().getCalories()
+        amountKkal.setText(String.format(view.getResources().getString(R.string.amoutKkalItem),product.getWeight()));
+        productComplete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(productComplete.isChecked()) {
+                    productComplete.setChecked(false);
+                }
+                else{
+                    productComplete.setChecked(true);
+                }
+                ExpandedListView exList = (ExpandedListView) ((View) (view.getParent().getParent().getParent())).findViewById(R.id.listProductNutrition);
+                exList.performItemClick((View) view.getParent(), position, product.getNutritionId());
+            }
+        });
         return view;
     }
 

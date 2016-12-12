@@ -86,7 +86,6 @@ public class CalcCalories extends Calc {
 
     public double calcIMT(){
         double x = this.getWeight() / (Math.pow(this.getHeight()/100 , 2));
-        Log.d("test_double", "x=" + x);
         x = this.roundTwoDecimals(x);
         return x;
     }
