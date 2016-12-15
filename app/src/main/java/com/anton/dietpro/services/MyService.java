@@ -71,7 +71,7 @@ public class MyService extends Service {
         builder.setContentTitle(getString(R.string.notificationTitle));//DietPro Notification
         builder.setContentText(String.format(getString(R.string.notificationText),
                 nutrition.getName(),
-                ( new SimpleDateFormat("hh:mm",new Locale("ru","RU"))).format(nutrition.getDatetime()) ));
+                (new SimpleDateFormat("kk:mm")).format(nutrition.getDatetime()) ));
         builder.setSmallIcon(R.mipmap.ic_launcher);
         builder.setContentIntent(pIntent);
         builder.setAutoCancel(true);

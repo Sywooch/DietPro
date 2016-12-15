@@ -88,5 +88,6 @@
     <string name="tikerText">Тикер текст</string>
     <string name="notificationTitle">DietPro Notification</string>
     <string name="notificationText">%1$s в %2$s. Не забудьте поесть.</string>
+    <string name="time">Время %s</string>
 
 </resources>

@@ -22,6 +22,7 @@ import com.anton.dietpro.models.Diet;
 import com.anton.dietpro.models.Nutrition;
 import com.anton.dietpro.models.Product;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,6 +75,8 @@ public class NutritionAdapter extends BaseAdapter {
         ingestionName.setText(nutrition.getName());
         TextView amountKkal = (TextView) view.findViewById(R.id.amountKkal);
         amountKkal.setText( String.format(view.getResources().getString(R.string.amountKkal) , nutrition.getAmountKkal().intValue() ));
+        TextView ingestionTime = (TextView) view.findViewById(R.id.ingestionTime);
+        ingestionTime.setText( String.format(view.getResources().getString(R.string.time) , (new SimpleDateFormat("kk:mm")).format(nutrition.getDatetime()) ));
 
         ListView productList =(ListView) view.findViewById(R.id.listProductNutrition);
         ProductItemAdapter productItems = new ProductItemAdapter(parent.getContext(), nutrition.getProducts());
