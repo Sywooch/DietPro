@@ -73,6 +73,12 @@ public class Diary {
         this.datetime = datetime;
     }
 
+    /**
+     * Вставляет прием пищи в БД
+     * @param context
+     * @param nutrition_id
+     * @return false - ошибка; true - успешная вставка
+     */
     public static boolean insertProductComplete(Context context, long nutrition_id) {
         if (nutrition_id<1){
             return false;
@@ -103,6 +109,12 @@ public class Diary {
 
     }
 
+    /**
+     *
+     * @param context
+     * @param nutrition_id
+     * @return
+     */
     public static boolean removeNutrition(Context context, long nutrition_id) {
         if (nutrition_id<1){
             return false;

@@ -20,11 +20,10 @@ import java.util.TimeZone;
  * Created by admin on 02.11.16.
  */
 
-public class Diet {
+public class Diet extends Item {
     public static final String TABLE_NAME = "diet";
 
-    private int id;
-    private String name;
+
     private int length;
     private double effect;
     private String description;
@@ -43,22 +42,6 @@ public class Diet {
         this.length = length;
         this.description = description;
     }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
 
     public int getLength() {
         return length;

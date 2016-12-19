@@ -14,13 +14,11 @@ import java.util.ArrayList;
  * Created by Anton Vasilev on 02.11.16.
  */
 
-public class Product {
+public class Product extends Item {
 
 
     public static final String TABLE_NAME = "product";
-    private int id;
     private PFC pfc; /// < Содержит БЖУ
-    private String name; /// < Название продукта
     private Double weight; /// < масса продукта в граммах
     private String description; /// <описание продукта
     private String url; /// < url картинки
@@ -34,22 +32,7 @@ public class Product {
         setInit();
         this.name = name;
     }
-
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-    public String getName() {
-        return this.name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+    
     public Double getWeight() {
         return this.weight;
     }

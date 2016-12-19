@@ -13,13 +13,11 @@ import java.util.Date;
  * Created by admin on 18.11.16.
  */
 
-public class Nutrition {
+public class Nutrition extends Item {
     private static final String TABLE_NUTRITION_NAME = "nutrition";
     private static final String TABLE_INGESTION_NAME = "ingestion";
     private static final String TABLE_MENU_NAME = "menu";
-    private Integer id;
     private Integer day;
-    private String Name;
     private ArrayList<Product> products;
     private Date datetime;
 
@@ -27,21 +25,6 @@ public class Nutrition {
     public Nutrition(){
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return Name;
-    }
-
-    public void setName(String name) {
-        Name = name;
-    }
 
     public ArrayList<Product> getProducts() {
         return products;
@@ -212,6 +195,15 @@ public class Nutrition {
 
     }
 
+    /**
+     *
+     * @param id
+     * @param day день недели
+     * @param idIngestion номер приема пищи
+     * @param date
+     * @param context
+     * @return
+     */
     private static ArrayList<Nutrition> getNutritionList(long id, long day, long idIngestion,Date date, Context context){
 
         Integer idDiet = Diet.getCurrentDietId(context);
